@@ -88,6 +88,7 @@
     border-radius:var(--radius);
     box-shadow:var(--shadow);
     padding:14px 16px;
+    position:relative;
   }
   .kpi-title{
     font-size:11px;
@@ -96,6 +97,34 @@
     text-transform:uppercase;
     letter-spacing:.03em;
     margin-bottom:8px;
+  }
+  .kpi-title-row{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:4px;
+    margin-bottom:8px;
+  }
+  .kpi-title-row .kpi-title{margin-bottom:0;}
+  .kpi-title-row .info-btn{width:15px;height:15px;font-size:9px;flex-shrink:0;margin-top:1px;}
+  .kpi-popover{
+    position:absolute;
+    top:calc(100% + 4px);
+    left:8px;
+    right:8px;
+    z-index:20;
+    font-size:11px;
+    line-height:1.5;
+    font-weight:400;
+    text-transform:none;
+    letter-spacing:normal;
+    color:var(--text-secondary);
+    background:#fff;
+    border:1px solid var(--border);
+    border-left:3px solid var(--blue);
+    border-radius:6px;
+    padding:9px 10px;
+    box-shadow:0 4px 14px rgba(0,0,0,0.12);
   }
   .kpi-value{
     font-size:24px;
@@ -739,34 +768,40 @@
 
     <div class="kpi-row" id="mlKpiRow" style="grid-template-columns:repeat(6,1fr);">
       <div class="kpi-card">
-        <div class="kpi-title">R² Treino (melhor modelo)</div>
+        <div class="kpi-title-row"><span class="kpi-title">R² Treino (melhor modelo)</span><button class="info-btn" type="button" data-info-target="kinfo-r2train">i</button></div>
         <div class="kpi-value" id="kpiR2Train">—</div>
         <div class="kpi-delta neutral" id="kpiNTrain">sem dados</div>
+        <div class="kpi-popover" id="kinfo-r2train" hidden>Quão bem o modelo se ajusta aos dados que ele viu no treino — tende a ser mais otimista que o R² de teste.</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-title">R² Teste (melhor modelo)</div>
+        <div class="kpi-title-row"><span class="kpi-title">R² Teste (melhor modelo)</span><button class="info-btn" type="button" data-info-target="kinfo-r2test">i</button></div>
         <div class="kpi-value" id="kpiR2Test">—</div>
         <div class="kpi-delta neutral" id="kpiNTest">sem dados</div>
+        <div class="kpi-popover" id="kinfo-r2test" hidden>Quão bem o modelo prevê dados que ele NUNCA viu durante o treino — a medida mais honesta do desempenho real.</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-title">RMSE Teste</div>
+        <div class="kpi-title-row"><span class="kpi-title">RMSE Teste</span><button class="info-btn" type="button" data-info-target="kinfo-rmse">i</button></div>
         <div class="kpi-value" id="kpiRmse">—</div>
         <div class="kpi-delta neutral" id="kpiRmseUnit">&nbsp;</div>
+        <div class="kpi-popover" id="kinfo-rmse" hidden>Raiz do erro quadrático médio das previsões no conjunto de teste, na mesma unidade da variável prevista — penaliza mais os erros grandes.</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-title">MAE Teste</div>
+        <div class="kpi-title-row"><span class="kpi-title">MAE Teste</span><button class="info-btn" type="button" data-info-target="kinfo-mae">i</button></div>
         <div class="kpi-value" id="kpiMae">—</div>
         <div class="kpi-delta neutral" id="kpiMaeUnit">&nbsp;</div>
+        <div class="kpi-popover" id="kinfo-mae" hidden>Erro médio absoluto das previsões no conjunto de teste — menos sensível a outliers que o RMSE.</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-title">Melhor Algoritmo</div>
+        <div class="kpi-title-row"><span class="kpi-title">Melhor Algoritmo</span><button class="info-btn" type="button" data-info-target="kinfo-best">i</button></div>
         <div class="kpi-value" id="kpiBestModel" style="font-size:16px;">—</div>
         <div class="kpi-delta neutral">de RF / XGBoost / SVR</div>
+        <div class="kpi-popover" id="kinfo-best" hidden>Entre Random Forest, XGBoost e SVR, o algoritmo com melhor R² no conjunto de teste (desempate pelo menor RMSE).</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-title">Variável Mais Influente (SHAP)</div>
+        <div class="kpi-title-row"><span class="kpi-title">Variável Mais Influente (SHAP)</span><button class="info-btn" type="button" data-info-target="kinfo-topfeat">i</button></div>
         <div class="kpi-value" id="kpiTopFeature" style="font-size:16px;">—</div>
         <div class="kpi-delta neutral" id="kpiTopFeatureDir">&nbsp;</div>
+        <div class="kpi-popover" id="kinfo-topfeat" hidden>A variável com maior impacto médio absoluto nas previsões do modelo, segundo a análise SHAP.</div>
       </div>
     </div>
 
@@ -975,29 +1010,34 @@
 
     <div class="kpi-row" style="grid-template-columns:repeat(5,1fr);">
       <div class="kpi-card">
-        <div class="kpi-title">R²</div>
+        <div class="kpi-title-row"><span class="kpi-title">R²</span><button class="info-btn" type="button" data-info-target="kinfo-rsmr2">i</button></div>
         <div class="kpi-value" id="rsmR2">—</div>
         <div class="kpi-delta neutral" id="rsmR2Adj">&nbsp;</div>
+        <div class="kpi-popover" id="kinfo-rsmr2" hidden>Fração da variação da resposta explicada pelo modelo quadrático — quanto mais perto de 1, melhor o ajuste aos dados observados.</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-title">F do modelo</div>
+        <div class="kpi-title-row"><span class="kpi-title">F do modelo</span><button class="info-btn" type="button" data-info-target="kinfo-rsmf">i</button></div>
         <div class="kpi-value" id="rsmF">—</div>
         <div class="kpi-delta neutral" id="rsmP">&nbsp;</div>
+        <div class="kpi-popover" id="kinfo-rsmf" hidden>Estatística do teste F geral do modelo — compara a variância explicada com a residual. Valor alto e p baixo indicam que o modelo é estatisticamente significativo.</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-title">Número de Condição</div>
+        <div class="kpi-title-row"><span class="kpi-title">Número de Condição</span><button class="info-btn" type="button" data-info-target="kinfo-rsmcond">i</button></div>
         <div class="kpi-value" id="rsmCond">—</div>
         <div class="kpi-delta neutral">&lt; 30 = bem condicionado</div>
+        <div class="kpi-popover" id="kinfo-rsmcond" hidden>Mede o quão mal-condicionada (colinear) é a matriz do modelo. Valores abaixo de ~30 indicam um modelo numericamente estável e confiável.</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-title">Observações</div>
+        <div class="kpi-title-row"><span class="kpi-title">Observações</span><button class="info-btn" type="button" data-info-target="kinfo-rsmn">i</button></div>
         <div class="kpi-value" id="rsmN">—</div>
         <div class="kpi-delta neutral" id="rsmDf">&nbsp;</div>
+        <div class="kpi-popover" id="kinfo-rsmn" hidden>Número de corridas experimentais reais usadas para ajustar o modelo, e quantos termos (graus de liberdade) o modelo tem.</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-title">Termo Mais Significativo</div>
+        <div class="kpi-title-row"><span class="kpi-title">Termo Mais Significativo</span><button class="info-btn" type="button" data-info-target="kinfo-rsmtop">i</button></div>
         <div class="kpi-value" id="rsmTopTerm" style="font-size:15px;">—</div>
         <div class="kpi-delta neutral" id="rsmTopTermP">&nbsp;</div>
+        <div class="kpi-popover" id="kinfo-rsmtop" hidden>O termo do modelo (linear, quadrático ou de interação) com maior efeito padronizado |t| — o fator com influência mais forte e confiável na resposta.</div>
       </div>
     </div>
 
