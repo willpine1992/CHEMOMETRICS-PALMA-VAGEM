@@ -1,0 +1,32 @@
+{
+  "ph": {
+    "label": "pH",
+    "min": 2.06,
+    "max": 10.08,
+    "default": 6.0
+  },
+  "massa_g": {
+    "label": "Massa (g)",
+    "min": 0.0503,
+    "max": 0.30179999999999996,
+    "default": 0.30105
+  },
+  "tempo_min": {
+    "label": "Tempo (min)",
+    "min": 0.0,
+    "max": 1440.0,
+    "default": 480.0
+  },
+  "conc_inicial_mgL": {
+    "label": "Concentra\u00e7\u00e3o inicial (mg/L)",
+    "min": 100.0,
+    "max": 400.0,
+    "default": 201.582837
+  },
+  "temperatura_C": {
+    "label": "Temperatura (\u00b0C)",
+    "min": 15.0,
+    "max": 45.0,
+    "default": 25.0
+  }
+}

@@ -1,0 +1,50 @@
+ph,massa_g,tempo_min,conc_inicial_mgL,temperatura_C,ce_mgL,qe_mgg,remocao_pct,origem_aba,tratamento,obs
+2.06,0.10095,1440,234.657926,25,190.7067938021454,8.707505140733948,18.729873287064937,pH Vagem,Acido,"tempo_min e temperatura_C assumidos (equilibrio 24h, temp ambiente) - nao informados na aba"
+4.01,0.101,1440,234.657926,25,115.61740166865314,23.57238105571225,50.72938568942558,pH Vagem,Acido,"tempo_min e temperatura_C assumidos (equilibrio 24h, temp ambiente) - nao informados na aba"
+6.01,0.10075,1440,234.657926,25,89.39570917759237,28.836172073927077,61.903818591837236,pH Vagem,Acido,"tempo_min e temperatura_C assumidos (equilibrio 24h, temp ambiente) - nao informados na aba"
+8.0,0.10075,1440,234.657926,25,48.27532777115613,36.99902694369109,79.42736109789186,pH Vagem,Acido,"tempo_min e temperatura_C assumidos (equilibrio 24h, temp ambiente) - nao informados na aba"
+10.08,0.10115,1440,234.657926,25,28.460071513706794,40.77070775804116,87.87167687073702,pH Vagem,Acido,"tempo_min e temperatura_C assumidos (equilibrio 24h, temp ambiente) - nao informados na aba"
+10.0,0.0503,1440,234.657926,25,11.773539928486294,88.62202229483648,94.98267962681717,Massa Vagem,Acido,pH=10 fixo (anotado na aba); tempo_min e temperatura_C assumidos
+10.0,0.1019,1440,234.657926,25,3.8772348033373065,45.29552329669532,98.34770771674796,Massa Vagem,Acido,pH=10 fixo (anotado na aba); tempo_min e temperatura_C assumidos
+10.0,0.1506,1440,234.657926,25,2.685339690107271,30.806452365191596,98.85563648503938,Massa Vagem,Acido,pH=10 fixo (anotado na aba); tempo_min e temperatura_C assumidos
+10.0,0.20145,1440,234.657926,25,2.8343265792610253,23.015497584585653,98.79214538900297,Massa Vagem,Acido,pH=10 fixo (anotado na aba); tempo_min e temperatura_C assumidos
+6.0,0.30105,0,201.582837,25,201.5828367103695,1.9241356615567534e-08,1.436781646523956e-07,Tempo (Vagem),Acido,pH=6 fixo (anotado na aba); temperatura_C assumida (ambiente)
+6.0,0.30105,1,201.582837,25,185.64123957091778,1.0590664294357905,7.90821166440982,Tempo (Vagem),Acido,pH=6 fixo (anotado na aba); temperatura_C assumida (ambiente)
+6.0,0.30105,5,201.582837,25,165.5280095351609,2.3952717133259673,17.885861713931092,Tempo (Vagem),Acido,pH=6 fixo (anotado na aba); temperatura_C assumida (ambiente)
+6.0,0.30105,10,201.582837,25,173.7222884386174,1.8508917828521918,13.820893175237241,Tempo (Vagem),Acido,pH=6 fixo (anotado na aba); temperatura_C assumida (ambiente)
+6.0,0.30105,30,201.582837,25,157.92967818831943,2.900060376128921,21.655196177083557,Tempo (Vagem),Acido,pH=6 fixo (anotado na aba); temperatura_C assumida (ambiente)
+6.0,0.30105,60,201.582837,25,126.79141835518473,4.9687041119292665,37.10207662412017,Tempo (Vagem),Acido,pH=6 fixo (anotado na aba); temperatura_C assumida (ambiente)
+6.0,0.30105,90,201.582837,25,102.0595947556615,6.611741720268296,49.37089075908705,Tempo (Vagem),Acido,pH=6 fixo (anotado na aba); temperatura_C assumida (ambiente)
+6.0,0.30105,120,201.582837,25,84.18116805721097,7.799479750392895,58.239913025328164,Tempo (Vagem),Acido,pH=6 fixo (anotado na aba); temperatura_C assumida (ambiente)
+6.0,0.30105,180,201.582837,25,88.94874851013111,7.482749609026335,55.874840420997195,Tempo (Vagem),Acido,pH=6 fixo (anotado na aba); temperatura_C assumida (ambiente)
+6.0,0.30105,240,201.582837,25,66.60071513706794,8.967422146682086,66.96111825379859,Tempo (Vagem),Acido,pH=6 fixo (anotado na aba); temperatura_C assumida (ambiente)
+6.0,0.30105,300,201.582837,25,59.59833134684148,9.43261954181422,70.43481864140969,Tempo (Vagem),Acido,pH=6 fixo (anotado na aba); temperatura_C assumida (ambiente)
+6.0,0.30105,360,201.582837,25,59.896305125148984,9.41282390797881,70.28700160363901,Tempo (Vagem),Acido,pH=6 fixo (anotado na aba); temperatura_C assumida (ambiente)
+6.0,0.30105,480,201.582837,25,60.04529201430274,9.402926091061106,70.21309308475368,Tempo (Vagem),Acido,pH=6 fixo (anotado na aba); temperatura_C assumida (ambiente)
+6.0,0.30105,1440,201.582837,25,47.38140643623361,10.24424052906603,76.4953171900078,Tempo (Vagem),Acido,pH=6 fixo (anotado na aba); temperatura_C assumida (ambiente)
+10.0,0.30179999999999996,0,201.582837,25,201.5828367103695,1.9193540122984117e-08,1.436781646523956e-07,Tempo (Vagem 2),Acido,pH=10 fixo (anotado na aba); temperatura_C assumida (ambiente)
+10.0,0.30179999999999996,1,201.582837,25,203.2216924910608,-0.10860540033537316,-0.8129935640606054,Tempo (Vagem 2),Acido,pH=10 fixo (anotado na aba); temperatura_C assumida (ambiente)
+10.0,0.30179999999999996,5,201.582837,25,200.53992848629323,0.06911255889375596,0.5173597758755509,Tempo (Vagem 2),Acido,pH=10 fixo (anotado na aba); temperatura_C assumida (ambiente)
+10.0,0.30179999999999996,10,201.582837,25,184.59833134684146,1.1255470943113686,8.425571296607234,Tempo (Vagem 2),Acido,pH=10 fixo (anotado na aba); temperatura_C assumida (ambiente)
+10.0,0.30179999999999996,30,201.582837,25,146.3087008343266,3.6629646233050646,27.42006065014027,Tempo (Vagem 2),Acido,pH=10 fixo (anotado na aba); temperatura_C assumida (ambiente)
+10.0,0.30179999999999996,60,201.582837,25,101.761620977354,6.615057390500069,49.51870779685773,Tempo (Vagem 2),Acido,pH=10 fixo (anotado na aba); temperatura_C assumida (ambiente)
+10.0,0.30179999999999996,90,201.582837,25,88.3528009535161,7.503647186645721,56.17047449653857,Tempo (Vagem 2),Acido,pH=10 fixo (anotado na aba); temperatura_C assumida (ambiente)
+10.0,0.30179999999999996,120,201.582837,25,87.45887961859356,7.562886506388766,56.613925609850625,Tempo (Vagem 2),Acido,pH=10 fixo (anotado na aba); temperatura_C assumida (ambiente)
+10.0,0.30179999999999996,180,201.582837,25,45.74255065554232,10.327388094397463,77.30831089774655,Tempo (Vagem 2),Acido,pH=10 fixo (anotado na aba); temperatura_C assumida (ambiente)
+10.0,0.30179999999999996,240,201.582837,25,32.63170441001192,11.196231450628769,83.81226055965672,Tempo (Vagem 2),Acido,pH=10 fixo (anotado na aba); temperatura_C assumida (ambiente)
+10.0,0.30179999999999996,300,201.582837,25,24.58641239570918,11.72938532831616,87.80332057946522,Tempo (Vagem 2),Acido,pH=10 fixo (anotado na aba); temperatura_C assumida (ambiente)
+10.0,0.30179999999999996,360,201.582837,25,17.286054827175207,12.213173106217683,91.424838004847,Tempo (Vagem 2),Acido,pH=10 fixo (anotado na aba); temperatura_C assumida (ambiente)
+10.0,0.30179999999999996,480,201.582837,25,14.008343265792611,12.430383945275508,93.05082542032454,Tempo (Vagem 2),Acido,pH=10 fixo (anotado na aba); temperatura_C assumida (ambiente)
+10.0,0.30179999999999996,1440,201.582837,25,9.240762812872466,12.746326983905075,95.4158980246555,Tempo (Vagem 2),Acido,pH=10 fixo (anotado na aba); temperatura_C assumida (ambiente)
+6.0,0.10063333333333334,1440,100.0,15,10.566062176165802,17.774217520470525,89.4339378238342,Conc. e temp VAGEM,Acido,pH=6 IMPUTADO (isoterma sem controle de pH registrado); tempo_min assumido (equilibrio 24h)
+6.0,0.1012,1440,200.0,15,28.139464594127805,33.964532688907546,85.93026770293609,Conc. e temp VAGEM,Acido,pH=6 IMPUTADO (isoterma sem controle de pH registrado); tempo_min assumido (equilibrio 24h)
+6.0,0.10066666666666667,1440,300.0,15,97.87176165803108,40.15792814741105,67.37607944732298,Conc. e temp VAGEM,Acido,pH=6 IMPUTADO (isoterma sem controle de pH registrado); tempo_min assumido (equilibrio 24h)
+6.0,0.10110000000000001,1440,400.0,15,173.17400690846284,44.871610898424755,56.70649827288429,Conc. e temp VAGEM,Acido,pH=6 IMPUTADO (isoterma sem controle de pH registrado); tempo_min assumido (equilibrio 24h)
+6.0,0.10083333333333333,1440,100.0,30,22.41839378238342,15.388087183659488,77.58160621761658,Conc. e temp VAGEM,Acido,pH=6 IMPUTADO (isoterma sem controle de pH registrado); tempo_min assumido (equilibrio 24h)
+6.0,0.10110000000000001,1440,200.0,30,74.36139896373055,24.854322658015715,62.819300518134725,Conc. e temp VAGEM,Acido,pH=6 IMPUTADO (isoterma sem controle de pH registrado); tempo_min assumido (equilibrio 24h)
+6.0,0.1002,1440,300.0,30,181.98229706390327,23.556427731755832,39.33923431203224,Conc. e temp VAGEM,Acido,pH=6 IMPUTADO (isoterma sem controle de pH registrado); tempo_min assumido (equilibrio 24h)
+6.0,0.10125,1440,400.0,30,308.88212435233163,17.998592720527082,22.779468911917093,Conc. e temp VAGEM,Acido,pH=6 IMPUTADO (isoterma sem controle de pH registrado); tempo_min assumido (equilibrio 24h)
+6.0,0.10023333333333334,1440,100.0,45,16.179188255613123,16.725137029142708,83.82081174438687,Conc. e temp VAGEM,Acido,pH=6 IMPUTADO (isoterma sem controle de pH registrado); tempo_min assumido (equilibrio 24h)
+6.0,0.1004,1440,200.0,45,33.08333333333333,33.25033200531209,83.45833333333334,Conc. e temp VAGEM,Acido,pH=6 IMPUTADO (isoterma sem controle de pH registrado); tempo_min assumido (equilibrio 24h)
+6.0,0.10046666666666666,1440,300.0,45,84.14119170984456,42.97122925484183,71.95293609671847,Conc. e temp VAGEM,Acido,pH=6 IMPUTADO (isoterma sem controle de pH registrado); tempo_min assumido (equilibrio 24h)
+6.0,0.1003,1440,400.0,45,171.51165803108805,45.56098543746998,57.122085492227995,Conc. e temp VAGEM,Acido,pH=6 IMPUTADO (isoterma sem controle de pH registrado); tempo_min assumido (equilibrio 24h)

@@ -1,0 +1,83 @@
+{
+  "points": [
+    {
+      "term": "Tempo (min)\u00b2",
+      "abs_t": 9.439489277896309,
+      "t": -9.439489277896309,
+      "significant": true
+    },
+    {
+      "term": "pH",
+      "abs_t": 5.752417754382718,
+      "t": 5.752417754382718,
+      "significant": true
+    },
+    {
+      "term": "Tempo (min)",
+      "abs_t": 5.5589781759178925,
+      "t": 5.5589781759178925,
+      "significant": true
+    },
+    {
+      "term": "Temperatura (\u00b0C)\u00b2",
+      "abs_t": 3.306884265369826,
+      "t": 3.306884265369826,
+      "significant": true
+    },
+    {
+      "term": "Concentra\u00e7\u00e3o inicial (mg/L)",
+      "abs_t": 3.170082715333445,
+      "t": -3.170082715333445,
+      "significant": true
+    },
+    {
+      "term": "Temperatura (\u00b0C)",
+      "abs_t": 2.1980328734931294,
+      "t": -2.1980328734931294,
+      "significant": true
+    },
+    {
+      "term": "pH \u00d7 Tempo (min)",
+      "abs_t": 1.533559166620304,
+      "t": 1.533559166620304,
+      "significant": false
+    },
+    {
+      "term": "Concentra\u00e7\u00e3o inicial (mg/L)\u00b2",
+      "abs_t": 0.9040641991773529,
+      "t": -0.9040641991773529,
+      "significant": false
+    },
+    {
+      "term": "pH\u00b2",
+      "abs_t": 0.3853544868965204,
+      "t": -0.3853544868965204,
+      "significant": false
+    },
+    {
+      "term": "Concentra\u00e7\u00e3o inicial (mg/L) \u00d7 Temperatura (\u00b0C)",
+      "abs_t": 0.3574128309552116,
+      "t": 0.3574128309552116,
+      "significant": false
+    },
+    {
+      "term": "Massa (g)\u00b2",
+      "abs_t": 0.21832278980061617,
+      "t": -0.21832278980061617,
+      "significant": false
+    },
+    {
+      "term": "Massa (g)",
+      "abs_t": 0.20183142190071504,
+      "t": 0.20183142190071504,
+      "significant": false
+    },
+    {
+      "term": "pH \u00d7 Massa (g)",
+      "abs_t": 0.15662366141156348,
+      "t": -0.15662366141156348,
+      "significant": false
+    }
+  ],
+  "t_critical": 2.0301079282503425
+}

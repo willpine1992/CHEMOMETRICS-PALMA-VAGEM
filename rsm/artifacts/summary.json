@@ -1,0 +1,67 @@
+{
+  "n_rows": 49,
+  "features": [
+    "ph",
+    "massa_g",
+    "tempo_min",
+    "conc_inicial_mgL",
+    "temperatura_C"
+  ],
+  "feature_labels": {
+    "ph": "pH",
+    "massa_g": "Massa (g)",
+    "tempo_min": "Tempo (min)",
+    "conc_inicial_mgL": "Concentra\u00e7\u00e3o inicial (mg/L)",
+    "temperatura_C": "Temperatura (\u00b0C)"
+  },
+  "interactions_kept": [
+    "pH \u00d7 Massa (g)",
+    "pH \u00d7 Tempo (min)",
+    "Concentra\u00e7\u00e3o inicial (mg/L) \u00d7 Temperatura (\u00b0C)"
+  ],
+  "interactions_dropped": [
+    "pH \u00d7 Concentra\u00e7\u00e3o inicial (mg/L)",
+    "pH \u00d7 Temperatura (\u00b0C)",
+    "Massa (g) \u00d7 Tempo (min)",
+    "Massa (g) \u00d7 Concentra\u00e7\u00e3o inicial (mg/L)",
+    "Massa (g) \u00d7 Temperatura (\u00b0C)",
+    "Tempo (min) \u00d7 Concentra\u00e7\u00e3o inicial (mg/L)",
+    "Tempo (min) \u00d7 Temperatura (\u00b0C)"
+  ],
+  "bounds": {
+    "ph": [
+      2.06,
+      10.08
+    ],
+    "massa_g": [
+      0.0503,
+      0.30179999999999996
+    ],
+    "tempo_min": [
+      0.0,
+      1440.0
+    ],
+    "conc_inicial_mgL": [
+      100.0,
+      400.0
+    ],
+    "temperatura_C": [
+      15.0,
+      45.0
+    ]
+  },
+  "qe": {
+    "r2": 0.9588615855260676,
+    "r2_adj": 0.9435816030071784,
+    "condition_number": 28.886792589348012,
+    "model_f": 62.752793358285466,
+    "model_p": 2.7047952706509755e-20
+  },
+  "remocao": {
+    "r2": 0.8951579774297145,
+    "r2_adj": 0.8562166547607513,
+    "condition_number": 28.886792589348012,
+    "model_f": 22.98735420569494,
+    "model_p": 2.441579612851124e-13
+  }
+}

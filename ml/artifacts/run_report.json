@@ -1,0 +1,17 @@
+{
+  "n_rows_total": 49,
+  "winsorization": {
+    "qe_mgg": {
+      "lower": -20.743840515632208,
+      "upper": 52.21322056338525,
+      "n_clipped": 1
+    },
+    "remocao_pct": {
+      "lower": -32.96319933477272,
+      "upper": 153.87753649632384,
+      "n_clipped": 0
+    }
+  },
+  "qe_best_model": "svr",
+  "remocao_best_model": "random_forest"
+}

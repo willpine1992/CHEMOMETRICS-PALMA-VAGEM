@@ -1,0 +1,38 @@
+{
+  "methylene_blue": {
+    "name": "methylene_blue",
+    "n_atoms": 38,
+    "xyz_path": "/Users/macbookpro/Documents/POSDOC - MAC/QUIMIOINFORMA\u0301TICA/DASHBOARD-VAGEM/dft/artifacts/methylene_blue_initial.xyz",
+    "smiles": "CN(C)C1=CC2=C(C=C1)N=C3C=CC(=[N+](C)C)C=C3S2",
+    "charge": 1,
+    "multiplicity": 1,
+    "source": "PubChem CID 6099 (c\u00e1tion, sem contra\u00edon Cl-)"
+  },
+  "glucose": {
+    "name": "glucose",
+    "n_atoms": 24,
+    "xyz_path": "/Users/macbookpro/Documents/POSDOC - MAC/QUIMIOINFORMA\u0301TICA/DASHBOARD-VAGEM/dft/artifacts/glucose_initial.xyz",
+    "smiles": "C([C@@H]1[C@H]([C@@H]([C@H]([C@@H](O1)O)O)O)O)O",
+    "charge": 0,
+    "multiplicity": 1,
+    "source": "PubChem CID 64689 (beta-D-glicopiranose, mon\u00f4mero da celulose) -- proxy 'in natura'"
+  },
+  "glucose_acido": {
+    "name": "glucose_acido",
+    "n_atoms": 29,
+    "xyz_path": "/Users/macbookpro/Documents/POSDOC - MAC/QUIMIOINFORMA\u0301TICA/DASHBOARD-VAGEM/dft/artifacts/glucose_acido_initial.xyz",
+    "smiles": "C([C@@H]1[C@H]([C@@H]([C@H]([C@@H](O1)O)O)O)O)OP(=O)(O)O",
+    "charge": 0,
+    "multiplicity": 1,
+    "source": "PubChem CID 439427 (beta-D-glicose 6-fosfato) -- proxy tratamento H3PO4"
+  },
+  "glucose_base": {
+    "name": "glucose_base",
+    "n_atoms": 23,
+    "xyz_path": "/Users/macbookpro/Documents/POSDOC - MAC/QUIMIOINFORMA\u0301TICA/DASHBOARD-VAGEM/dft/artifacts/glucose_base_initial.xyz",
+    "smiles": "C([C@@H]1[C@H]([C@@H]([C@H]([C@@H](O1)O)O)O)O)[O-]",
+    "charge": -1,
+    "multiplicity": 1,
+    "source": "Glicopiranose C6-alc\u00f3xido (desprotona\u00e7\u00e3o do -OH prim\u00e1rio) -- proxy tratamento NaOH"
+  }
+}

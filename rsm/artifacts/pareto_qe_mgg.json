@@ -1,0 +1,83 @@
+{
+  "points": [
+    {
+      "term": "pH",
+      "abs_t": 7.769635347271896,
+      "t": 7.769635347271896,
+      "significant": true
+    },
+    {
+      "term": "Massa (g)\u00b2",
+      "abs_t": 6.725013270334598,
+      "t": 6.725013270334598,
+      "significant": true
+    },
+    {
+      "term": "Concentra\u00e7\u00e3o inicial (mg/L)",
+      "abs_t": 6.7225655459144456,
+      "t": 6.7225655459144456,
+      "significant": true
+    },
+    {
+      "term": "Temperatura (\u00b0C)\u00b2",
+      "abs_t": 5.562387265067008,
+      "t": 5.562387265067008,
+      "significant": true
+    },
+    {
+      "term": "Concentra\u00e7\u00e3o inicial (mg/L)\u00b2",
+      "abs_t": 3.70262027736777,
+      "t": -3.70262027736777,
+      "significant": true
+    },
+    {
+      "term": "Tempo (min)\u00b2",
+      "abs_t": 3.5472969102010583,
+      "t": -3.5472969102010583,
+      "significant": true
+    },
+    {
+      "term": "Temperatura (\u00b0C)",
+      "abs_t": 3.501121183222585,
+      "t": -3.501121183222585,
+      "significant": true
+    },
+    {
+      "term": "pH \u00d7 Massa (g)",
+      "abs_t": 2.660218058152685,
+      "t": -2.660218058152685,
+      "significant": true
+    },
+    {
+      "term": "Tempo (min)",
+      "abs_t": 2.455992909369839,
+      "t": 2.455992909369839,
+      "significant": true
+    },
+    {
+      "term": "Massa (g)",
+      "abs_t": 2.269480019093826,
+      "t": -2.269480019093826,
+      "significant": true
+    },
+    {
+      "term": "pH \u00d7 Tempo (min)",
+      "abs_t": 0.9396704645700596,
+      "t": 0.9396704645700596,
+      "significant": false
+    },
+    {
+      "term": "pH\u00b2",
+      "abs_t": 0.8533870164202967,
+      "t": 0.8533870164202967,
+      "significant": false
+    },
+    {
+      "term": "Concentra\u00e7\u00e3o inicial (mg/L) \u00d7 Temperatura (\u00b0C)",
+      "abs_t": 0.3725412778864108,
+      "t": 0.3725412778864108,
+      "significant": false
+    }
+  ],
+  "t_critical": 2.0301079282503425
+}

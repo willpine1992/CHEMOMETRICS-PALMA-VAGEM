@@ -1,0 +1,2484 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Vagem — Quimiometria</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.34.0/plotly.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/3Dmol/2.4.2/3Dmol-min.js"></script>
+<style>
+  :root{
+    --bg:#F4F6F9;
+    --card:#FFFFFF;
+    --text:#2C3E50;
+    --text-secondary:#7F8C8D;
+    --teal-dark:#008080;
+    --teal:#00A896;
+    --teal-mid:#02C39A;
+    --teal-light:#80ED99;
+    --blue:#2A6F97;
+    --alert:#E74C3C;
+    --border:#E2E8F0;
+    --radius:8px;
+    --shadow:0 2px 8px rgba(0,0,0,0.05);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter','Segoe UI',Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{
+    max-width:1440px;
+    margin:0 auto;
+    padding:24px;
+  }
+  header.top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:20px;
+  }
+  header.top h1{
+    font-size:20px;
+    font-weight:700;
+    margin:0;
+  }
+  header.top .subtitle{
+    font-size:12px;
+    color:var(--text-secondary);
+    margin-top:2px;
+  }
+  .filter-field label{
+    display:block;
+    font-size:10px;
+    font-weight:600;
+    color:var(--text-secondary);
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    margin-bottom:5px;
+  }
+  .filter-field select, .filter-field input{
+    width:100%;
+    font-family:inherit;
+    font-size:12.5px;
+    color:var(--text);
+    padding:7px 8px;
+    border-radius:6px;
+    border:1px solid var(--border);
+    background:#FBFCFD;
+  }
+
+  /* KPI row */
+  .kpi-row{
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    gap:14px;
+    margin-bottom:20px;
+  }
+  .kpi-card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:14px 16px;
+  }
+  .kpi-title{
+    font-size:11px;
+    font-weight:500;
+    color:var(--text-secondary);
+    text-transform:uppercase;
+    letter-spacing:.03em;
+    margin-bottom:8px;
+  }
+  .kpi-value{
+    font-size:24px;
+    font-weight:700;
+    color:var(--text);
+    line-height:1;
+  }
+  .kpi-delta{
+    margin-top:8px;
+    font-size:11px;
+    font-weight:500;
+  }
+  .kpi-delta.up{color:var(--teal-dark);}
+  .kpi-delta.down{color:var(--alert);}
+  .kpi-delta.neutral{color:var(--text-secondary);}
+
+  /* Section card generic */
+  .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:18px 20px;
+  }
+  .card-header{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    margin-bottom:14px;
+  }
+  .card-title{
+    font-size:15px;
+    font-weight:600;
+    color:var(--text);
+  }
+  .card-subtitle{
+    font-size:12px;
+    color:var(--text-secondary);
+    margin-top:2px;
+  }
+
+  .chart-holder{
+    position:relative;
+    height:280px;
+  }
+
+  /* ML & XAI section */
+  .ml-section{
+    margin-top:20px;
+  }
+  .ml-section .section-heading{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:14px;
+  }
+  .ml-section .section-heading h2{
+    font-size:16px;
+    font-weight:700;
+    margin:0;
+  }
+  .ml-section .section-heading .card-subtitle{margin-top:3px;}
+
+  .callout{
+    display:flex;
+    gap:10px;
+    align-items:flex-start;
+    background:#FBFCFD;
+    border:1px solid var(--border);
+    border-left:3px solid var(--blue);
+    border-radius:6px;
+    padding:12px 14px;
+    font-size:12px;
+    color:var(--text-secondary);
+    line-height:1.5;
+    margin-bottom:16px;
+  }
+  .callout .icon{font-size:15px;flex-shrink:0;}
+  .callout b{color:var(--text);}
+
+  .segmented{
+    display:inline-flex;
+    background:#EEF1F4;
+    border-radius:7px;
+    padding:3px;
+    gap:2px;
+  }
+  .segmented button{
+    font-family:inherit;
+    font-size:11.5px;
+    font-weight:600;
+    color:var(--text-secondary);
+    background:transparent;
+    border:none;
+    border-radius:5px;
+    padding:6px 14px;
+    cursor:pointer;
+  }
+  .segmented button.active{
+    background:var(--card);
+    color:var(--teal-dark);
+    box-shadow:0 1px 3px rgba(0,0,0,0.08);
+  }
+
+  .ml-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+    margin-bottom:16px;
+  }
+  .ml-grid .chart-holder{height:260px;}
+
+  .metric-box{
+    position:absolute;
+    top:10px;
+    right:10px;
+    background:rgba(255,255,255,0.92);
+    border:1px solid var(--border);
+    border-radius:6px;
+    padding:8px 10px;
+    font-size:11px;
+    line-height:1.6;
+    color:var(--text);
+    box-shadow:var(--shadow);
+  }
+  .metric-box b{color:var(--teal-dark);}
+
+  .predict-card{
+    display:grid;
+    grid-template-columns:1.3fr 1fr;
+    gap:24px;
+  }
+  .slider-field{margin-bottom:16px;}
+  .slider-field:last-child{margin-bottom:0;}
+  .slider-field .slider-label{
+    display:flex;
+    justify-content:space-between;
+    font-size:11.5px;
+    font-weight:600;
+    color:var(--text-secondary);
+    margin-bottom:6px;
+  }
+  .slider-field .slider-label .val{color:var(--teal-dark);font-weight:700;}
+  .slider-field input[type="range"]{
+    width:100%;
+    accent-color:var(--teal);
+  }
+  .predict-outputs{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    justify-content:center;
+  }
+  .predict-output-card{
+    background:#FBFCFD;
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:16px;
+    text-align:center;
+  }
+  .predict-output-card .lbl{
+    font-size:11px;
+    font-weight:600;
+    color:var(--text-secondary);
+    text-transform:uppercase;
+    letter-spacing:.03em;
+    margin-bottom:6px;
+  }
+  .predict-output-card .val{
+    font-size:28px;
+    font-weight:700;
+    color:var(--teal-dark);
+  }
+  .predict-status{
+    font-size:10.5px;
+    color:var(--text-secondary);
+    text-align:center;
+    margin-top:8px;
+  }
+
+  /* Isotherms section */
+  .iso-section{
+    margin-top:20px;
+  }
+  .iso-section .section-heading{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:14px;
+  }
+  .iso-section .section-heading h2{
+    font-size:16px;
+    font-weight:700;
+    margin:0;
+  }
+  .iso-grid{
+    display:grid;
+    grid-template-columns:1.3fr 1fr;
+    gap:16px;
+    margin-top:16px;
+  }
+  .iso-controls{
+    display:flex;
+    flex-wrap:wrap;
+    gap:12px;
+    margin-bottom:14px;
+  }
+  .iso-controls .filter-field{
+    min-width:140px;
+    flex:1;
+  }
+  .iso-info-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:16px;
+    margin-top:12px;
+    font-size:11.5px;
+    color:var(--text-secondary);
+  }
+  .iso-info-row b{color:var(--teal-dark);font-size:13px;}
+  .iso-warning{
+    margin-top:10px;
+    font-size:11px;
+    color:var(--alert);
+    background:rgba(231,76,60,0.07);
+    border-left:3px solid var(--alert);
+    border-radius:4px;
+    padding:8px 10px;
+    line-height:1.5;
+  }
+  table.iso-models{
+    width:100%;
+    border-collapse:collapse;
+    font-size:12px;
+    margin-top:8px;
+  }
+  table.iso-models th{
+    text-align:right;
+    font-size:10px;
+    color:var(--text-secondary);
+    text-transform:uppercase;
+    letter-spacing:.03em;
+    padding:6px 4px;
+    border-bottom:1px solid var(--border);
+  }
+  table.iso-models th:first-child, table.iso-models td:first-child{text-align:left;}
+  table.iso-models td{
+    padding:7px 4px;
+    border-bottom:1px solid var(--border);
+    color:var(--text);
+    text-align:right;
+  }
+  table.iso-models td.best{color:var(--teal-dark);font-weight:700;}
+
+  @media (max-width: 1100px){
+    .iso-grid{grid-template-columns:1fr;}
+  }
+
+  /* RSM / DoE section */
+  .rsm-section{
+    margin-top:20px;
+  }
+  .rsm-section .section-heading{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:14px;
+  }
+  .rsm-section .section-heading h2{
+    font-size:16px;
+    font-weight:700;
+    margin:0;
+  }
+  .rsm-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+    margin-bottom:16px;
+  }
+  .rsm-grid .plot-holder{height:320px;}
+  .plot-holder{width:100%;}
+
+  table.anova{
+    width:100%;
+    border-collapse:collapse;
+    font-size:12px;
+  }
+  table.anova th{
+    text-align:right;
+    font-size:10px;
+    color:var(--text-secondary);
+    text-transform:uppercase;
+    letter-spacing:.03em;
+    padding:6px 4px;
+    border-bottom:1px solid var(--border);
+  }
+  table.anova th:first-child, table.anova td:first-child{text-align:left;}
+  table.anova td{
+    padding:7px 4px;
+    border-bottom:1px solid var(--border);
+    color:var(--text);
+    text-align:right;
+  }
+  table.anova tr.significant td:first-child{color:var(--teal-dark);font-weight:600;}
+  table.anova tr.residual td{color:var(--text-secondary);font-style:italic;}
+  table.anova td.sig-badge{font-size:10px;font-weight:700;}
+  table.anova td.sig-yes{color:var(--teal-dark);}
+  table.anova td.sig-no{color:var(--text-secondary);}
+
+  .optimum-grid{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:12px;
+    margin-top:6px;
+  }
+  .optimum-cell{
+    background:#FBFCFD;
+    border:1px solid var(--border);
+    border-radius:6px;
+    padding:10px 12px;
+    text-align:center;
+  }
+  .optimum-cell .lbl{
+    font-size:10px;
+    font-weight:600;
+    color:var(--text-secondary);
+    text-transform:uppercase;
+    margin-bottom:4px;
+  }
+  .optimum-cell .val{font-size:15px;font-weight:700;color:var(--teal-dark);}
+
+  @media (max-width: 1100px){
+    .rsm-grid{grid-template-columns:1fr;}
+    .optimum-grid{grid-template-columns:repeat(2,1fr);}
+  }
+
+  /* Nonlinear fit section */
+  .fit-section{
+    margin-top:20px;
+  }
+  .fit-section .section-heading{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:14px;
+  }
+  .fit-section .section-heading h2{
+    font-size:16px;
+    font-weight:700;
+    margin:0;
+  }
+  .model-toggle{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin:12px 0 4px;
+  }
+  .model-toggle button{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-family:inherit;
+    font-size:11.5px;
+    font-weight:600;
+    padding:6px 12px;
+    border-radius:20px;
+    border:1px solid var(--border);
+    background:#FBFCFD;
+    color:var(--text-secondary);
+    cursor:pointer;
+  }
+  .model-toggle button::before{
+    content:'';
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:var(--dot, var(--teal));
+    opacity:.35;
+  }
+  .model-toggle button.active{
+    border-color:var(--dot, var(--teal));
+    color:var(--text);
+    background:#fff;
+  }
+  .model-toggle button.active::before{opacity:1;}
+
+  .fit-grid{
+    display:grid;
+    grid-template-columns:1.6fr 1fr;
+    gap:16px;
+    margin-top:14px;
+  }
+  @media (max-width: 1100px){
+    .fit-grid{grid-template-columns:1fr;}
+  }
+
+  /* DFT / molecular section */
+  .dft-section{
+    margin-top:20px;
+  }
+  .dft-section .section-heading{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:14px;
+  }
+  .dft-section .section-heading h2{
+    font-size:16px;
+    font-weight:700;
+    margin:0;
+  }
+  .dft-viewer-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    grid-template-rows:1fr 1fr;
+    gap:16px;
+  }
+  .dft-viewer-cell{
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:12px;
+    background:#FBFCFD;
+  }
+  .dft-viewer-cell .dvc-title{
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--text);
+    margin-bottom:8px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+  }
+  .dft-viewer-cell .dvc-canvas{
+    width:100%;
+    height:260px;
+    position:relative;
+    border-radius:6px;
+    border:1px solid var(--border);
+    background:#fff;
+  }
+  .dft-legend{
+    display:flex;
+    gap:16px;
+    flex-wrap:wrap;
+    font-size:11px;
+    color:var(--text-secondary);
+    margin-top:10px;
+  }
+  .dft-legend span{display:inline-flex;align-items:center;gap:5px;}
+  .dft-legend .dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
+  @media (max-width: 900px){
+    .dft-viewer-grid{grid-template-columns:1fr;}
+  }
+
+  /* Reusable: info button + popover, export button, per-section insights, footer */
+  .card-header{gap:10px;}
+  .card-title-row{display:flex;align-items:center;gap:7px;}
+  .card-toolbar{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    flex-shrink:0;
+    margin-left:auto;
+  }
+  .info-btn{
+    width:19px;height:19px;
+    flex-shrink:0;
+    border-radius:50%;
+    border:1px solid var(--border);
+    background:#FBFCFD;
+    color:var(--text-secondary);
+    font-size:11px;
+    font-weight:700;
+    font-family:Georgia,'Times New Roman',serif;
+    font-style:italic;
+    cursor:pointer;
+    display:inline-flex;align-items:center;justify-content:center;
+    line-height:1;
+    padding:0;
+  }
+  .info-btn:hover{border-color:var(--teal);color:var(--teal-dark);}
+  .info-popover{
+    font-size:11.5px;
+    line-height:1.55;
+    color:var(--text-secondary);
+    background:#FBFCFD;
+    border:1px solid var(--border);
+    border-left:3px solid var(--blue);
+    border-radius:6px;
+    padding:10px 12px;
+    margin:0 0 14px;
+  }
+  .export-btn{
+    font-family:inherit;
+    font-size:10.5px;
+    font-weight:600;
+    color:var(--text-secondary);
+    background:#FBFCFD;
+    border:1px solid var(--border);
+    border-radius:5px;
+    padding:4px 10px 4px 8px;
+    cursor:pointer;
+    display:inline-flex;align-items:center;gap:4px;
+    white-space:nowrap;
+  }
+  .export-btn:hover{border-color:var(--teal);color:var(--teal-dark);}
+  .export-btn::before{content:'⬇';font-size:9px;position:relative;top:-1px;}
+
+  .insights-box{
+    margin-top:16px;
+  }
+  .insights-box .insights-label{
+    font-size:11px;
+    font-weight:600;
+    color:var(--text-secondary);
+    text-transform:uppercase;
+    letter-spacing:.03em;
+    margin-bottom:6px;
+  }
+  .insights-box textarea{
+    width:100%;
+    min-height:90px;
+    resize:vertical;
+    font-family:'Inter','Segoe UI',sans-serif;
+    font-size:12.5px;
+    line-height:1.5;
+    color:var(--text);
+    padding:12px;
+    border:1px solid var(--border);
+    border-radius:6px;
+    background:#FBFCFD;
+  }
+  .insights-box textarea:focus{outline:none;border-color:var(--teal);}
+  .insights-box .save-indicator{
+    font-size:10px;
+    color:var(--text-secondary);
+    margin-top:4px;
+    text-align:right;
+    min-height:12px;
+  }
+
+  .report-btn{
+    font-family:inherit;
+    font-size:12.5px;
+    font-weight:600;
+    color:#fff;
+    background:var(--teal-dark);
+    border:none;
+    border-radius:7px;
+    padding:9px 16px;
+    cursor:pointer;
+    white-space:nowrap;
+    box-shadow:var(--shadow);
+  }
+  .report-btn:hover{background:#00695c;}
+
+  footer.app-footer{
+    margin-top:28px;
+    padding:20px 0 8px;
+    text-align:center;
+    font-size:11.5px;
+    color:var(--text-secondary);
+    border-top:1px solid var(--border);
+  }
+  footer.app-footer a{
+    color:var(--teal-dark);
+    text-decoration:none;
+    font-weight:600;
+  }
+  footer.app-footer a:hover{text-decoration:underline;}
+
+  .notes-section{
+    margin-top:20px;
+  }
+  .notes-section textarea{
+    width:100%;
+    min-height:160px;
+    resize:vertical;
+    font-family:'Inter','Segoe UI',sans-serif;
+    font-size:13px;
+    line-height:1.5;
+    color:var(--text);
+    padding:14px;
+    border:1px solid var(--border);
+    border-radius:6px;
+    background:#FBFCFD;
+  }
+  .notes-section textarea:focus{
+    outline:none;
+    border-color:var(--teal);
+  }
+  .save-indicator{
+    font-size:10.5px;
+    color:var(--text-secondary);
+    margin-top:6px;
+    text-align:right;
+    min-height:14px;
+  }
+
+  @media (max-width: 1100px){
+    .filters{grid-template-columns:repeat(3,1fr);}
+    .kpi-row{grid-template-columns:repeat(3,1fr);}
+    .ml-grid{grid-template-columns:1fr;}
+    .predict-card{grid-template-columns:1fr;}
+  }
+  @media (max-width: 620px){
+    .kpi-row{grid-template-columns:repeat(2,1fr);}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div>
+      <h1>Dashboard Vagem</h1>
+      <div class="subtitle">Bioadsorção da Vagem — ML/XAI, DoE &amp; RSM, Isotermas/Cinética e DFT</div>
+    </div>
+    <button class="report-btn" type="button" id="reportBtn" onclick="generateReport()">📄 Gerar Relatório (PDF)</button>
+  </header>
+
+  <div class="ml-section">
+    <div class="section-heading">
+      <div>
+        <h2>Modelagem Preditiva — Machine Learning &amp; XAI</h2>
+        <div class="card-subtitle">Random Forest, XGBoost e SVR prevendo Q<sub>e</sub> e %Remoção &middot; explicabilidade via SHAP</div>
+      </div>
+      <div class="segmented" id="targetToggle">
+        <button class="active" data-target="qe">Q<sub>e</sub> (mg/g)</button>
+        <button data-target="remocao">% Remoção</button>
+      </div>
+    </div>
+
+    <div class="callout">
+      <span class="icon">⚠️</span>
+      <div>
+        <b>Dataset pequeno e real (49 corridas experimentais, fibra tratada com Ácido)</b> — combinando os experimentos OFAT de pH, massa, tempo e concentração/temperatura. R² de teste é modesto e pode variar entre reamostragens; trate os modelos como ferramenta exploratória de tendências (não como preditor definitivo). Alguns valores de tempo/temperatura não registrados na planilha original foram assumidos (equilíbrio ≈24h, temperatura ambiente) — ver <code>ml/data/vagem_ml_dataset.csv</code> (coluna <code>obs</code>) para o detalhe de cada corrida.
+      </div>
+    </div>
+
+    <div class="kpi-row" id="mlKpiRow" style="grid-template-columns:repeat(6,1fr);">
+      <div class="kpi-card">
+        <div class="kpi-title">R² Treino (melhor modelo)</div>
+        <div class="kpi-value" id="kpiR2Train">—</div>
+        <div class="kpi-delta neutral" id="kpiNTrain">sem dados</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-title">R² Teste (melhor modelo)</div>
+        <div class="kpi-value" id="kpiR2Test">—</div>
+        <div class="kpi-delta neutral" id="kpiNTest">sem dados</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-title">RMSE Teste</div>
+        <div class="kpi-value" id="kpiRmse">—</div>
+        <div class="kpi-delta neutral" id="kpiRmseUnit">&nbsp;</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-title">MAE Teste</div>
+        <div class="kpi-value" id="kpiMae">—</div>
+        <div class="kpi-delta neutral" id="kpiMaeUnit">&nbsp;</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-title">Melhor Algoritmo</div>
+        <div class="kpi-value" id="kpiBestModel" style="font-size:16px;">—</div>
+        <div class="kpi-delta neutral">de RF / XGBoost / SVR</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-title">Variável Mais Influente (SHAP)</div>
+        <div class="kpi-value" id="kpiTopFeature" style="font-size:16px;">—</div>
+        <div class="kpi-delta neutral" id="kpiTopFeatureDir">&nbsp;</div>
+      </div>
+    </div>
+
+    <div class="ml-grid">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title-row">
+              <span class="card-title">Paridade — Previsto vs. Observado</span>
+              <button class="info-btn" type="button" data-info-target="info-parity">i</button>
+            </div>
+            <div class="card-subtitle" id="parityCaption">Q<sub>e</sub> medido em laboratório vs. previsto pelo modelo</div>
+          </div>
+        </div>
+        <div class="info-popover" id="info-parity" hidden>Compara os valores previstos pelo modelo com os valores medidos experimentalmente. Pontos próximos da linha tracejada y=x indicam boa previsão; a caixa no canto mostra R², RMSE e MAE calculados só no conjunto de teste (dados que o modelo não viu no treino).</div>
+        <div class="chart-holder">
+          <canvas id="parityChart"></canvas>
+          <div class="metric-box" id="parityMetricBox">R² — · RMSE — · MAE —</div>
+          <button class="export-btn" type="button" style="position:absolute;top:8px;left:8px;" onclick="exportChartPNG(() => ML.parityChart, 'paridade_' + ML.target + '.png')">Exportar PNG</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title-row">
+              <span class="card-title">SHAP Summary (Beeswarm)</span>
+              <button class="info-btn" type="button" data-info-target="info-shap">i</button>
+            </div>
+            <div class="card-subtitle">Impacto de cada variável na predição — cor = valor original (azul baixo · vermelho alto)</div>
+          </div>
+        </div>
+        <div class="info-popover" id="info-shap" hidden>Cada ponto é uma amostra experimental. A posição no eixo X mostra o quanto o valor daquela variável, naquela amostra, empurrou a previsão do modelo pra cima ou pra baixo. A cor mostra se o valor original da variável era alto (vermelho) ou baixo (azul). Variáveis no topo são as mais influentes em média.</div>
+        <div class="chart-holder">
+          <canvas id="shapChart"></canvas>
+          <button class="export-btn" type="button" style="position:absolute;top:8px;right:8px;" onclick="exportChartPNG(() => ML.shapChart, 'shap_' + ML.target + '.png')">Exportar PNG</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title-row">
+            <span class="card-title">Simulador Interativo</span>
+            <button class="info-btn" type="button" data-info-target="info-sim">i</button>
+          </div>
+          <div class="card-subtitle">Ajuste as condições experimentais e veja a predição em tempo real (modelo servido em localhost:8765)</div>
+        </div>
+      </div>
+      <div class="info-popover" id="info-sim" hidden>Move os controles deslizantes (dentro da faixa realmente testada em laboratório) para simular novas condições experimentais e ver a predição do modelo de ML em tempo real — útil para explorar tendências antes de rodar um experimento de confirmação.</div>
+      <div class="predict-card">
+        <div id="sliderContainer"></div>
+        <div class="predict-outputs">
+          <div class="predict-output-card">
+            <div class="lbl">Q<sub>e</sub> previsto</div>
+            <div class="val" id="predQe">—</div>
+          </div>
+          <div class="predict-output-card">
+            <div class="lbl">% Remoção prevista</div>
+            <div class="val" id="predRemocao">—</div>
+          </div>
+          <div class="predict-status" id="predictStatus">aguardando conexão com a API...</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card insights-box">
+      <div class="insights-label">Insights desta seção (ML &amp; XAI)</div>
+      <textarea id="insightsMl" placeholder="Anote aqui suas conclusões sobre o desempenho dos modelos, variáveis mais influentes, etc..."></textarea>
+      <div class="save-indicator" id="insightsMlIndicator"></div>
+    </div>
+  </div>
+
+  <div class="iso-section">
+    <div class="section-heading">
+      <div>
+        <h2>Comparação de Isotermas — Palma vs. Vagem</h2>
+        <div class="card-subtitle">Parâmetros de ajuste (banco relacional <code>isotherm_params</code>) por material, tratamento e temperatura</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title-row">
+            <span class="card-title">Q<sub>max</sub> / R² por Temperatura</span>
+            <button class="info-btn" type="button" data-info-target="info-isoqmax">i</button>
+          </div>
+          <div class="card-subtitle">Langmuir — Vagem usa o ajuste não-linear (mais robusto); Palma usa o ajuste original da planilha</div>
+        </div>
+        <div class="segmented" id="isoMetricToggle">
+          <button class="active" data-metric="qmax">Q<sub>max</sub></button>
+          <button data-metric="r2">R²</button>
+        </div>
+      </div>
+      <div class="info-popover" id="info-isoqmax" hidden>Compara o parâmetro de Langmuir selecionado (Qmax ou R²) entre Palma e Vagem, por tratamento e temperatura. Linhas sólidas = Vagem, linhas tracejadas = Palma. Útil para ver rapidamente como a capacidade de adsorção muda com a temperatura em cada combinação.</div>
+      <div class="chart-holder" style="height:260px;">
+        <canvas id="isoQmaxChart"></canvas>
+        <button class="export-btn" type="button" style="position:absolute;top:8px;right:8px;" onclick="exportChartPNG(() => ISO.qmaxChart, 'isotermas_qmax.png')">Exportar PNG</button>
+      </div>
+    </div>
+
+    <div class="iso-grid">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title-row">
+              <span class="card-title">Curva da Isoterma (Q<sub>e</sub> vs. C<sub>e</sub>)</span>
+              <button class="info-btn" type="button" data-info-target="info-isocurve">i</button>
+            </div>
+            <div class="card-subtitle">Pontos experimentais (quando disponíveis) + curva de Langmuir ajustada</div>
+          </div>
+        </div>
+        <div class="info-popover" id="info-isocurve" hidden>Mostra os pontos experimentais reais de equilíbrio (Qe vs Ce) e a curva de Langmuir ajustada para a combinação de material/tratamento/temperatura selecionada. O aviso vermelho (quando aparece) sinaliza blocos com poucos pontos ou dados não-monotônicos — trate esses com mais cautela.</div>
+        <div class="iso-controls">
+          <div class="filter-field">
+            <label>Material</label>
+            <select id="isoCurveMaterial">
+              <option value="Vagem">Vagem</option>
+              <option value="Palma">Palma</option>
+            </select>
+          </div>
+          <div class="filter-field">
+            <label>Tratamento</label>
+            <select id="isoCurveTreatment">
+              <option value="Base">Base</option>
+              <option value="Acido">Ácido</option>
+              <option value="In natura">In natura</option>
+            </select>
+          </div>
+          <div class="filter-field">
+            <label>Temperatura</label>
+            <select id="isoCurveTemp">
+              <option value="15">15 °C</option>
+              <option value="30">30 °C</option>
+              <option value="45">45 °C</option>
+            </select>
+          </div>
+        </div>
+        <div class="chart-holder" style="height:240px;">
+          <canvas id="isoCurveChart"></canvas>
+          <button class="export-btn" type="button" style="position:absolute;top:8px;right:8px;" onclick="exportChartPNG(() => ISO.curveChart, 'isoterma_curva.png')">Exportar PNG</button>
+        </div>
+        <div class="iso-info-row" id="isoCurveInfo"></div>
+        <div class="iso-warning" id="isoCurveWarning" hidden></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title-row">
+              <span class="card-title">Comparação de Modelos — Palma</span>
+              <button class="info-btn" type="button" data-info-target="info-isomodels">i</button>
+            </div>
+            <div class="card-subtitle">R² por modelo de isoterma e temperatura</div>
+          </div>
+        </div>
+        <div class="info-popover" id="info-isomodels" hidden>Compara o R² de 6 modelos de isoterma diferentes (Langmuir, Freundlich, Temkin, DKR, Harkin-Jura, Halsey) ajustados aos dados de Palma. O melhor modelo em cada temperatura fica destacado em verde — ajuda a ver qual teoria de adsorção descreve melhor o sistema.</div>
+        <div class="iso-controls">
+          <div class="filter-field">
+            <label>Tratamento</label>
+            <select id="isoModelsTreatment">
+              <option value="Base">Base</option>
+              <option value="Acido">Ácido</option>
+              <option value="In natura">In natura</option>
+            </select>
+          </div>
+        </div>
+        <table class="iso-models" id="isoModelsTable">
+          <thead>
+            <tr><th>Modelo</th><th>15 °C</th><th>30 °C</th><th>45 °C</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card insights-box">
+      <div class="insights-label">Insights desta seção (Comparação de Isotermas)</div>
+      <textarea id="insightsIso" placeholder="Anote aqui suas conclusões sobre as diferenças entre Palma e Vagem, tratamentos, temperaturas..."></textarea>
+      <div class="save-indicator" id="insightsIsoIndicator"></div>
+    </div>
+  </div>
+
+  <div class="rsm-section">
+    <div class="section-heading">
+      <div>
+        <h2>Otimização Multivariada — DoE &amp; RSM</h2>
+        <div class="card-subtitle">Modelo quadrático (RSM) + ANOVA + otimização por desirability, sobre os mesmos dados de Vagem/Ácido do painel de ML</div>
+      </div>
+      <div class="segmented" id="rsmTargetToggle">
+        <button class="active" data-target="qe_mgg">Q<sub>e</sub> (mg/g)</button>
+        <button data-target="remocao_pct">% Remoção</button>
+      </div>
+    </div>
+
+    <div class="callout">
+      <span class="icon">⚠️</span>
+      <div>
+        <b>Isto é RSM aplicado retrospectivamente a dados OFAT, não um CCD/BBD desenhado a priori.</b>
+        O modelo quadrático completo (21 termos) é matematicamente singular neste dataset — massa e tempo têm correlação de −0,89 entre si, um artefato de como os experimentos foram conduzidos (um fator variado por vez). Via análise de VIF, mantivemos só os termos com suporte real de dados:
+        <span id="rsmFormulaText"></span>. As demais 7 interações foram descartadas por colinearidade severa (VIF entre ~1500 e >10¹⁵) — não aparecem na ANOVA nem no Pareto.
+      </div>
+    </div>
+
+    <div class="kpi-row" style="grid-template-columns:repeat(5,1fr);">
+      <div class="kpi-card">
+        <div class="kpi-title">R²</div>
+        <div class="kpi-value" id="rsmR2">—</div>
+        <div class="kpi-delta neutral" id="rsmR2Adj">&nbsp;</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-title">F do modelo</div>
+        <div class="kpi-value" id="rsmF">—</div>
+        <div class="kpi-delta neutral" id="rsmP">&nbsp;</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-title">Número de Condição</div>
+        <div class="kpi-value" id="rsmCond">—</div>
+        <div class="kpi-delta neutral">&lt; 30 = bem condicionado</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-title">Observações</div>
+        <div class="kpi-value" id="rsmN">—</div>
+        <div class="kpi-delta neutral" id="rsmDf">&nbsp;</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-title">Termo Mais Significativo</div>
+        <div class="kpi-value" id="rsmTopTerm" style="font-size:15px;">—</div>
+        <div class="kpi-delta neutral" id="rsmTopTermP">&nbsp;</div>
+      </div>
+    </div>
+
+    <div class="rsm-grid">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title-row">
+              <span class="card-title">Superfície de Resposta 3D</span>
+              <button class="info-btn" type="button" data-info-target="info-rsm3d">i</button>
+            </div>
+            <div class="card-subtitle">pH × Massa — única interação estatisticamente significativa</div>
+          </div>
+          <button class="export-btn" type="button" onclick="exportPlotlyPNG('rsmSurface3D', 'rsm_superficie3d_' + RSM.target + '.png')">Exportar PNG</button>
+        </div>
+        <div class="info-popover" id="info-rsm3d" hidden>Mostra como a resposta prevista pelo modelo quadrático (Qe ou %Remoção) varia simultaneamente com pH e Massa, mantendo as demais variáveis na média amostral. Cores quentes (vermelho) = maior resposta prevista; arraste para rotacionar.</div>
+        <div class="plot-holder" id="rsmSurface3D" style="position:relative;"></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title-row">
+              <span class="card-title">Mapa de Contorno 2D</span>
+              <button class="info-btn" type="button" data-info-target="info-rsmcontour">i</button>
+            </div>
+            <div class="card-subtitle">Mesma superfície, vista de cima — zona ótima nas cores mais quentes</div>
+          </div>
+          <button class="export-btn" type="button" onclick="exportPlotlyPNG('rsmContour2D', 'rsm_contorno2d_' + RSM.target + '.png')">Exportar PNG</button>
+        </div>
+        <div class="info-popover" id="info-rsmcontour" hidden>Projeção de cima da superfície de resposta, com curvas de nível (isorresposta) — facilita achar visualmente a "zona ótima" de pH e Massa sem precisar rotacionar o gráfico 3D.</div>
+        <div class="plot-holder" id="rsmContour2D" style="position:relative;"></div>
+      </div>
+    </div>
+
+    <div class="rsm-grid">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title-row">
+              <span class="card-title">Tabela ANOVA</span>
+              <button class="info-btn" type="button" data-info-target="info-anova">i</button>
+            </div>
+            <div class="card-subtitle">Soma dos Quadrados (Tipo II), graus de liberdade, F e valor-p</div>
+          </div>
+        </div>
+        <div class="info-popover" id="info-anova" hidden>Testa estatisticamente se cada termo do modelo (efeito linear, quadrático ou de interação) tem impacto real na resposta. Valor-p &lt; 0,05 = termo estatisticamente significativo (destacado em verde) naquele nível de confiança.</div>
+        <table class="anova" id="rsmAnovaTable">
+          <thead>
+            <tr><th>Fonte</th><th>SQ</th><th>gl</th><th>F</th><th>p</th><th>Sig.</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title-row">
+              <span class="card-title">Pareto dos Efeitos Padronizados</span>
+              <button class="info-btn" type="button" data-info-target="info-pareto">i</button>
+            </div>
+            <div class="card-subtitle">|t| de cada termo — linha tracejada = limiar de significância (α=0,05)</div>
+          </div>
+        </div>
+        <div class="info-popover" id="info-pareto" hidden>Ordena os termos do modelo pelo tamanho do seu efeito padronizado (|t|). Barras além da linha tracejada vermelha (t crítico) são estatisticamente significativas a 95% de confiança — mesma informação da tabela ANOVA, em formato visual.</div>
+        <div class="chart-holder" style="height:280px;">
+          <canvas id="rsmParetoChart"></canvas>
+          <button class="export-btn" type="button" style="position:absolute;top:8px;right:8px;" onclick="exportChartPNG(() => RSM.paretoChart, 'rsm_pareto_' + RSM.target + '.png')">Exportar PNG</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title-row">
+            <span class="card-title">Ponto Ótimo — Função Desirability</span>
+            <button class="info-btn" type="button" data-info-target="info-optimum">i</button>
+          </div>
+          <div class="card-subtitle">Maximiza Q<sub>e</sub> previsto minimizando a massa de adsorvente, dentro da faixa observada</div>
+        </div>
+      </div>
+      <div class="info-popover" id="info-optimum" hidden>Combinação de fatores encontrada por otimização numérica (scipy) que maximiza a função de desirability — um compromisso entre Qe alto e massa de adsorvente baixa — dentro da faixa de valores realmente observada em laboratório.</div>
+      <div class="optimum-grid" id="rsmOptimumGrid"></div>
+      <div class="iso-warning" style="margin-top:14px;">
+        ⚠ Esta combinação de fatores é uma predição do modelo dentro dos limites observados de cada variável — mas o dataset é OFAT, então essa combinação conjunta específica nunca foi testada em laboratório. Trate como sugestão de ponto de partida para um experimento de confirmação, não como resultado validado.
+      </div>
+    </div>
+
+    <div class="card insights-box">
+      <div class="insights-label">Insights desta seção (DoE &amp; RSM)</div>
+      <textarea id="insightsRsm" placeholder="Anote aqui suas conclusões sobre os efeitos significativos, o ponto ótimo encontrado, etc..."></textarea>
+      <div class="save-indicator" id="insightsRsmIndicator"></div>
+    </div>
+  </div>
+
+  <div class="fit-section">
+    <div class="section-heading">
+      <div>
+        <h2>Ajuste Não-Linear — Isotermas &amp; Cinética</h2>
+        <div class="card-subtitle">Regressão direta (scipy.optimize.curve_fit, sem linearização) + funções de erro (χ², ARE, HYBRID, R²<sub>NL</sub>)</div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <span class="icon">⚠️</span>
+      <div>
+        <b>Cada bloco de isoterma tem só 4 pontos experimentais.</b> Isso é pouco para um modelo de 3 parâmetros como Redlich-Peterson (sobra 1 grau de liberdade) — um R² alto nesse caso pode ser sobreajuste, não um ajuste genuinamente melhor. Use χ²/ARE/HYBRID junto com R²<sub>NL</sub>, não isoladamente. Dados brutos de isoterma só existem para <b>Vagem</b> (Palma só tem os parâmetros já ajustados da planilha original). A cinética (Q<sub>t</sub> vs. t) tem 14 pontos por grupo e cobre os dois materiais.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title-row">
+            <span class="card-title">Ajustador de Isotermas de Equilíbrio</span>
+            <button class="info-btn" type="button" data-info-target="info-fitiso">i</button>
+          </div>
+          <div class="card-subtitle">Q<sub>e</sub> vs. C<sub>e</sub> — ative/desative os modelos para comparar</div>
+        </div>
+      </div>
+      <div class="info-popover" id="info-fitiso" hidden>Compara diferentes modelos de isoterma (Langmuir, Freundlich, Temkin, Redlich-Peterson) ajustados diretamente aos dados experimentais via regressão não-linear — clique nos nomes dos modelos para ativar/desativar cada curva. O gráfico de resíduos abaixo mostra se algum modelo tem viés sistemático.</div>
+      <div class="iso-controls">
+        <div class="filter-field">
+          <label>Material</label>
+          <select id="fitIsoMaterial"><option value="Vagem">Vagem</option></select>
+        </div>
+        <div class="filter-field">
+          <label>Tratamento</label>
+          <select id="fitIsoTreatment">
+            <option value="Base">Base</option>
+            <option value="Acido">Ácido</option>
+            <option value="In natura">In natura</option>
+          </select>
+        </div>
+        <div class="filter-field">
+          <label>Temperatura</label>
+          <select id="fitIsoTemp">
+            <option value="15">15 °C</option>
+            <option value="30">30 °C</option>
+            <option value="45">45 °C</option>
+          </select>
+        </div>
+      </div>
+      <div class="model-toggle" id="fitIsoModelToggle">
+        <button class="active" data-model="Langmuir" style="--dot:#008080">Langmuir</button>
+        <button class="active" data-model="Freundlich" style="--dot:#2A6F97">Freundlich</button>
+        <button class="active" data-model="Temkin" style="--dot:#E67E22">Temkin</button>
+        <button class="active" data-model="Redlich-Peterson" style="--dot:#8E44AD">Redlich-Peterson</button>
+      </div>
+      <div class="fit-grid">
+        <div>
+          <div class="chart-holder" style="height:250px;">
+            <canvas id="fitIsoChart"></canvas>
+            <button class="export-btn" type="button" style="position:absolute;top:8px;right:8px;" onclick="exportChartPNG(() => FIT.isoChart, 'ajuste_isotermas.png')">Exportar PNG</button>
+          </div>
+          <div class="card-subtitle" style="margin-top:10px;">Resíduos (Q<sub>exp</sub> − Q<sub>calc</sub>) vs. C<sub>e</sub> — esperado: espalhamento aleatório em torno de zero</div>
+          <div class="chart-holder" style="height:140px;"><canvas id="fitIsoResidChart"></canvas></div>
+        </div>
+        <table class="anova" id="fitIsoErrorTable">
+          <thead><tr><th>Modelo</th><th>χ²</th><th>ARE%</th><th>HYBRID</th><th>R²<sub>NL</sub></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <div class="card-header">
+        <div>
+          <div class="card-title-row">
+            <span class="card-title">Ajustador de Cinética</span>
+            <button class="info-btn" type="button" data-info-target="info-fitkin">i</button>
+          </div>
+          <div class="card-subtitle">Q<sub>t</sub> vs. tempo — ative/desative os modelos para comparar</div>
+        </div>
+      </div>
+      <div class="info-popover" id="info-fitkin" hidden>Compara os modelos cinéticos (pseudo-1ª ordem, pseudo-2ª ordem, Elovich) ajustados à evolução da adsorção ao longo do tempo de contato. Pontos claros = réplicas individuais; pontos escuros = média usada no ajuste.</div>
+      <div class="iso-controls">
+        <div class="filter-field">
+          <label>Material</label>
+          <select id="fitKinMaterial">
+            <option value="Vagem">Vagem</option>
+            <option value="Palma">Palma</option>
+          </select>
+        </div>
+        <div class="filter-field">
+          <label>Tratamento</label>
+          <select id="fitKinTreatment">
+            <option value="Acido">Ácido</option>
+            <option value="Base">Base</option>
+          </select>
+        </div>
+      </div>
+      <div class="model-toggle" id="fitKinModelToggle">
+        <button class="active" data-model="PFO" style="--dot:#008080">Pseudo-1ª ordem</button>
+        <button class="active" data-model="PSO" style="--dot:#2A6F97">Pseudo-2ª ordem</button>
+        <button class="active" data-model="Elovich" style="--dot:#E67E22">Elovich</button>
+      </div>
+      <div class="fit-grid">
+        <div>
+          <div class="chart-holder" style="height:250px;">
+            <canvas id="fitKinChart"></canvas>
+            <button class="export-btn" type="button" style="position:absolute;top:8px;right:8px;" onclick="exportChartPNG(() => FIT.kinChart, 'ajuste_cinetica.png')">Exportar PNG</button>
+          </div>
+          <div class="card-subtitle" style="margin-top:10px;">Resíduos (Q<sub>exp</sub> − Q<sub>calc</sub>) vs. tempo</div>
+          <div class="chart-holder" style="height:140px;"><canvas id="fitKinResidChart"></canvas></div>
+        </div>
+        <table class="anova" id="fitKinErrorTable">
+          <thead><tr><th>Modelo</th><th>χ²</th><th>ARE%</th><th>HYBRID</th><th>R²<sub>NL</sub></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card insights-box">
+      <div class="insights-label">Insights desta seção (Ajuste Não-Linear)</div>
+      <textarea id="insightsFit" placeholder="Anote aqui suas conclusões sobre qual modelo se ajusta melhor, mecanismo cinético sugerido, etc..."></textarea>
+      <div class="save-indicator" id="insightsFitIndicator"></div>
+    </div>
+  </div>
+
+  <div class="dft-section">
+    <div class="section-heading">
+      <div>
+        <h2>Modelagem Molecular — DFT (B3LYP/6-31G*)</h2>
+        <div class="card-subtitle">Química quântica real (pyscf), não uma simulação — orbitais de fronteira, índices de reatividade e potencial eletrostático molecular</div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <span class="icon">⚠️</span>
+      <div>
+        <b>Escopo: DFT real, sem Dinâmica Molecular.</b> Modelamos o azul de metileno (cátion, PubChem CID 6099) e um monômero da celulose — β-D-glicopiranose (PubChem CID 64689) — em três estados: <b>In natura</b> (glicose neutra), <b>Ácido</b> (glicose-6-fosfato, éster fosfato formado por H₃PO₄ — PubChem CID 439427) e <b>Base</b> (glicose com o -OH do C6 desprotonado, alcóxido, carga −1 — proxy da mercerização por NaOH). Celulose é um polímero — DFT não escala pra ela inteira, por isso o monômero como proxy; lignina/hemicelulose ficam fora deste recorte. MD em caixa solvatada foi propositalmente deixada de fora (custo computacional incompatível com hardware local) — ver conversa para escopo completo.
+        <br><br>
+        <b>Achado:</b> o HOMO do alcóxido (Base) sobe de ≈−7 eV (formas neutras) para <b>−0,645 eV</b> — muito mais fácil de doar densidade eletrônica, ou seja, muito mais nucleofílico. Isso é consistente com a fibra tratada com NaOH interagir mais fortemente com o corante catiônico (azul de metileno) por atração eletrostática/transferência de carga — uma explicação eletrônica para um padrão que já aparecia nas isotermas experimentais.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title-row">
+            <span class="card-title">Diagrama de Níveis de Energia (HOMO–LUMO)</span>
+            <button class="info-btn" type="button" data-info-target="info-dftenergy">i</button>
+          </div>
+          <div class="card-subtitle">Cada barra vai do HOMO ao LUMO — gap menor = molécula mais reativa/polarizável</div>
+        </div>
+      </div>
+      <div class="info-popover" id="info-dftenergy" hidden>Cada barra vai da energia do orbital HOMO (mais alto ocupado) até o LUMO (mais baixo desocupado) de cada sistema. Gaps menores indicam moléculas mais reativas/polarizáveis; passe o mouse sobre uma barra para ver os valores exatos.</div>
+      <div class="chart-holder" style="height:280px;">
+        <canvas id="dftEnergyChart"></canvas>
+        <button class="export-btn" type="button" style="position:absolute;top:8px;right:8px;" onclick="exportChartPNG(() => DFT.energyChart, 'dft_diagrama_energia.png')">Exportar PNG</button>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <div class="card-header">
+        <div>
+          <div class="card-title-row">
+            <span class="card-title">Índices de Reatividade (DFT Conceitual)</span>
+            <button class="info-btn" type="button" data-info-target="info-dftreact">i</button>
+          </div>
+          <div class="card-subtitle">Aproximação de Koopmans: μ=(HOMO+LUMO)/2, χ=−μ, η=(LUMO−HOMO)/2, S=1/2η, ω=μ²/2η</div>
+        </div>
+      </div>
+      <div class="info-popover" id="info-dftreact" hidden>Índices derivados de HOMO/LUMO via teoria DFT conceitual, quantificando a tendência de cada sistema a doar ou receber elétrons: dureza (η, resistência à mudança de densidade eletrônica), maciez (S, o inverso) e eletrofilia (ω, capacidade de aceitar elétrons).</div>
+      <table class="anova" id="dftReactivityTable">
+        <thead>
+          <tr><th>Sistema</th><th>HOMO (eV)</th><th>LUMO (eV)</th><th>Gap (eV)</th><th>Dureza η</th><th>Maciez S</th><th>Eletrofilia ω</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <div class="card-header">
+        <div>
+          <div class="card-title-row">
+            <span class="card-title">Visualizador Molecular 3D</span>
+            <button class="info-btn" type="button" data-info-target="info-dft3d">i</button>
+          </div>
+          <div class="card-subtitle">Geometria otimizada (ball-and-stick) + isosuperfícies, os 4 sistemas lado a lado — arraste para rotacionar, scroll para zoom</div>
+        </div>
+      </div>
+      <div class="info-popover" id="info-dft3d" hidden>Geometria otimizada por DFT (bastão-e-esfera) com isosuperfície opcional: o potencial eletrostático molecular (MEP — vermelho = região rica em elétrons/nucleofílica, azul = pobre em elétrons/eletrofílica) ou a forma dos orbitais HOMO/LUMO (fases positiva/negativa do orbital). Os 4 sistemas usam a mesma isosuperfície selecionada, para facilitar a comparação visual.</div>
+      <div class="iso-controls">
+        <div class="filter-field">
+          <label>Isosuperfície (aplicada aos 4 painéis)</label>
+          <select id="dftSurfaceSelect">
+            <option value="none">Nenhuma (só geometria)</option>
+            <option value="mep" selected>Potencial Eletrostático (MEP)</option>
+            <option value="homo">Orbital HOMO</option>
+            <option value="lumo">Orbital LUMO</option>
+          </select>
+        </div>
+      </div>
+      <div class="dft-viewer-grid" id="dftViewerGrid"></div>
+    </div>
+
+    <div class="card insights-box">
+      <div class="insights-label">Insights desta seção (DFT)</div>
+      <textarea id="insightsDft" placeholder="Anote aqui suas conclusões sobre reatividade, sítios nucleofílicos/eletrofílicos, etc..."></textarea>
+      <div class="save-indicator" id="insightsDftIndicator"></div>
+    </div>
+  </div>
+
+  <div class="card notes-section">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Notas &amp; Observações</div>
+        <div class="card-subtitle">Espaço livre do quadro branco — anote hipóteses, próximos passos, referências</div>
+      </div>
+    </div>
+    <textarea id="notes" placeholder="Comece a escrever suas análises aqui..."></textarea>
+    <div class="save-indicator" id="saveIndicator"></div>
+  </div>
+
+  <footer class="app-footer">
+    Powered by <strong>William Pinheiro</strong> &middot; <a href="http://lattes.cnpq.br/9111919283952655" target="_blank" rel="noopener noreferrer">Currículo Lattes</a>
+  </footer>
+
+</div>
+
+<script>
+  // Persist freeform notes locally (per-browser)
+  const notes = document.getElementById('notes');
+  const indicator = document.getElementById('saveIndicator');
+  try {
+    notes.value = localStorage.getItem('dashboard-vagem-notes') || '';
+  } catch (e) {}
+  let saveTimeout;
+  notes.addEventListener('input', () => {
+    clearTimeout(saveTimeout);
+    saveTimeout = setTimeout(() => {
+      try {
+        localStorage.setItem('dashboard-vagem-notes', notes.value);
+        indicator.textContent = 'Salvo ' + new Date().toLocaleTimeString('pt-BR');
+      } catch (e) {}
+    }, 400);
+  });
+
+  const tealDark = '#00A896';
+  const teal = '#02C39A';
+  const tealLight = '#80ED99';
+  const blue = '#2A6F97';
+
+  // ---------------------------------------------------------------
+  // Componentes reutilizáveis: botão de info (popover) e exportação PNG
+  // ---------------------------------------------------------------
+  Chart.defaults.devicePixelRatio = 4; // exporta em ~4x a resolução de tela (~"400 DPI" equivalente)
+
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.info-btn');
+    if (!btn) return;
+    const popover = document.getElementById(btn.dataset.infoTarget);
+    if (popover) popover.hidden = !popover.hidden;
+  });
+
+  function triggerDownload(dataUrl, filename) {
+    const a = document.createElement('a');
+    a.href = dataUrl;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+  function exportChartPNG(getChart, filename) {
+    const chart = getChart();
+    if (!chart) return;
+    triggerDownload(chart.toBase64Image('image/png', 1), filename);
+  }
+  function exportPlotlyPNG(divId, filename) {
+    const el = document.getElementById(divId);
+    if (!el || !window.Plotly) return;
+    Plotly.downloadImage(el, {
+      format: 'png', filename: filename.replace(/\.png$/, ''),
+      width: Math.max(el.offsetWidth, 300) * 4, height: Math.max(el.offsetHeight, 300) * 4,
+    });
+  }
+  function exportViewerPNG(viewerGetter, filename) {
+    const viewer = viewerGetter();
+    if (!viewer) return;
+    triggerDownload(viewer.pngURI(), filename);
+  }
+  function setupInsightsBox(key, textareaId, indicatorId) {
+    const ta = document.getElementById(textareaId);
+    const ind = document.getElementById(indicatorId);
+    if (!ta) return;
+    try { ta.value = localStorage.getItem(key) || ''; } catch (e) {}
+    let t;
+    ta.addEventListener('input', () => {
+      clearTimeout(t);
+      t = setTimeout(() => {
+        try {
+          localStorage.setItem(key, ta.value);
+          if (ind) ind.textContent = 'Salvo ' + new Date().toLocaleTimeString('pt-BR');
+        } catch (e) {}
+      }, 400);
+    });
+  }
+
+  // ---------------------------------------------------------------
+  // Modelagem Preditiva (ML & XAI) — dados vindos do backend Flask
+  // ---------------------------------------------------------------
+  const ML = { data: {}, target: 'qe', parityChart: null, shapChart: null, predictTimeout: null };
+  const alertColor = '#E74C3C';
+  const modelLabels = { random_forest: 'Random Forest', xgboost: 'XGBoost', svr: 'SVR' };
+  const targetUnit = { qe: 'mg/g', remocao: '% remoção' };
+  const targetLabel = { qe: 'Qₑ (mg/g)', remocao: '% Remoção' };
+
+  function fmt(n, d) { return (typeof n === 'number' && isFinite(n)) ? n.toFixed(d) : '—'; }
+
+  function lerpColor(t) {
+    // t: 0 (baixo, azul) -> 1 (alto, vermelho)
+    const a = [42, 111, 151];   // --blue
+    const b = [231, 76, 60];    // --alert
+    const r = Math.round(a[0] + (b[0] - a[0]) * t);
+    const g = Math.round(a[1] + (b[1] - a[1]) * t);
+    const bl = Math.round(a[2] + (b[2] - a[2]) * t);
+    return `rgb(${r},${g},${bl})`;
+  }
+
+  async function loadMLData() {
+    const files = {
+      metrics: 'ml/artifacts/metrics.json',
+      parity_qe: 'ml/artifacts/parity_qe.json',
+      parity_remocao: 'ml/artifacts/parity_remocao.json',
+      shap_qe: 'ml/artifacts/shap_qe.json',
+      shap_remocao: 'ml/artifacts/shap_remocao.json',
+      feature_ranges: 'ml/artifacts/feature_ranges.json'
+    };
+    const entries = Object.entries(files);
+    const results = await Promise.all(entries.map(([, path]) => fetch(path).then(r => r.ok ? r.json() : null).catch(() => null)));
+    entries.forEach(([key], i) => { ML.data[key] = results[i]; });
+  }
+
+  function renderKpis(target) {
+    const metrics = ML.data.metrics && ML.data.metrics[target];
+    if (!metrics) return;
+    const best = metrics.best_model;
+    const trainM = metrics.models[best].train;
+    const testM = metrics.models[best].test;
+    document.getElementById('kpiR2Train').textContent = fmt(trainM.r2, 3);
+    document.getElementById('kpiNTrain').textContent = 'n treino = ' + metrics.n_train;
+    document.getElementById('kpiR2Test').textContent = fmt(testM.r2, 3);
+    document.getElementById('kpiNTest').textContent = 'n teste = ' + metrics.n_test;
+    document.getElementById('kpiRmse').textContent = fmt(testM.rmse, 2);
+    document.getElementById('kpiRmseUnit').textContent = targetUnit[target];
+    document.getElementById('kpiMae').textContent = fmt(testM.mae, 2);
+    document.getElementById('kpiMaeUnit').textContent = targetUnit[target];
+    document.getElementById('kpiBestModel').textContent = modelLabels[best] || best;
+
+    const shap = ML.data['shap_' + target];
+    if (shap && shap.feature_order && shap.feature_order.length) {
+      const topFeature = shap.feature_order[0];
+      document.getElementById('kpiTopFeature').textContent = topFeature;
+      const pts = shap.points.filter(p => p.feature === topFeature);
+      const high = pts.filter(p => p.feature_value_norm >= 0.6);
+      const low = pts.filter(p => p.feature_value_norm <= 0.4);
+      const mean = arr => arr.length ? arr.reduce((s, p) => s + p.shap_value, 0) / arr.length : 0;
+      const dir = mean(high) >= mean(low) ? 'valor alto aumenta a previsão' : 'valor alto reduz a previsão';
+      document.getElementById('kpiTopFeatureDir').textContent = dir;
+    }
+  }
+
+  function renderParity(target) {
+    const parity = ML.data['parity_' + target];
+    const metrics = ML.data.metrics && ML.data.metrics[target];
+    if (!parity || !metrics) return;
+    const best = metrics.best_model;
+    const testM = metrics.models[best].test;
+
+    document.getElementById('parityCaption').innerHTML =
+      (target === 'qe' ? 'Q<sub>e</sub>' : '% Remoção') + ' medido em laboratório vs. previsto pelo modelo (' + (modelLabels[best] || best) + ')';
+    document.getElementById('parityMetricBox').innerHTML =
+      `R² <b>${fmt(testM.r2, 3)}</b> · RMSE <b>${fmt(testM.rmse, 2)}</b> · MAE <b>${fmt(testM.mae, 2)}</b>`;
+
+    const allVals = [...parity.train.y_true, ...parity.train.y_pred, ...parity.test.y_true, ...parity.test.y_pred];
+    const lo = Math.min(...allVals), hi = Math.max(...allVals);
+    const pad = (hi - lo) * 0.08 || 1;
+
+    const trainPts = parity.train.y_true.map((v, i) => ({ x: v, y: parity.train.y_pred[i] }));
+    const testPts = parity.test.y_true.map((v, i) => ({ x: v, y: parity.test.y_pred[i] }));
+
+    if (ML.parityChart) ML.parityChart.destroy();
+    ML.parityChart = new Chart(document.getElementById('parityChart'), {
+      type: 'scatter',
+      data: {
+        datasets: [
+          {
+            label: 'Treino', data: trainPts,
+            backgroundColor: 'rgba(2,195,154,0.45)', borderColor: tealDark,
+            pointRadius: 4, pointHoverRadius: 5
+          },
+          {
+            label: 'Teste', data: testPts,
+            backgroundColor: 'rgba(42,111,151,0.7)', borderColor: blue,
+            pointRadius: 5, pointHoverRadius: 6, pointStyle: 'triangle'
+          },
+          {
+            label: 'y = x', type: 'line', data: [{ x: lo - pad, y: lo - pad }, { x: hi + pad, y: hi + pad }],
+            borderColor: '#B9C2CA', borderWidth: 1.5, borderDash: [5, 4],
+            pointRadius: 0, fill: false, order: 0
+          }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 } } } },
+        scales: {
+          x: { title: { display: true, text: 'Observado (' + targetUnit[target] + ')', font: { size: 11 } }, min: lo - pad, max: hi + pad, grid: { color: '#EEF1F4' } },
+          y: { title: { display: true, text: 'Previsto (' + targetUnit[target] + ')', font: { size: 11 } }, min: lo - pad, max: hi + pad, grid: { color: '#EEF1F4' } }
+        }
+      }
+    });
+  }
+
+  function renderShap(target) {
+    const shap = ML.data['shap_' + target];
+    if (!shap) return;
+    const order = shap.feature_order;
+    const n = order.length;
+    const counters = {};
+    const points = shap.points.map(p => {
+      const idx = order.indexOf(p.feature);
+      counters[p.feature] = (counters[p.feature] || 0) + 1;
+      const c = counters[p.feature];
+      const jitter = (((c * 47) % 97) / 97 - 0.5) * 0.7;
+      return {
+        x: p.shap_value,
+        y: (n - 1 - idx) + jitter,
+        color: lerpColor(p.feature_value_norm)
+      };
+    });
+
+    if (ML.shapChart) ML.shapChart.destroy();
+    ML.shapChart = new Chart(document.getElementById('shapChart'), {
+      type: 'scatter',
+      data: {
+        datasets: [
+          {
+            label: 'zero', type: 'line', data: [{ x: 0, y: -0.5 }, { x: 0, y: n - 0.5 }],
+            borderColor: '#D7DEE3', borderWidth: 1, pointRadius: 0, fill: false, order: 0
+          },
+          {
+            label: 'SHAP', data: points,
+            backgroundColor: points.map(p => p.color),
+            pointRadius: 3.5, pointHoverRadius: 5, order: 1
+          }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { title: { display: true, text: 'Impacto SHAP na predição', font: { size: 11 } }, grid: { color: '#EEF1F4' } },
+          y: {
+            min: -0.7, max: n - 0.3, grid: { display: false },
+            ticks: {
+              stepSize: 1, font: { size: 11 },
+              callback: (value) => {
+                const idx = Math.round(value);
+                if (Math.abs(value - idx) > 0.05 || idx < 0 || idx >= n) return '';
+                return order[n - 1 - idx];
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  function renderAll(target) {
+    ML.target = target;
+    renderKpis(target);
+    renderParity(target);
+    renderShap(target);
+  }
+
+  function buildSliders() {
+    const ranges = ML.data.feature_ranges;
+    if (!ranges) return;
+    const order = ['ph', 'massa_g', 'tempo_min', 'conc_inicial_mgL', 'temperatura_C'];
+    const stepFor = { ph: 0.01, massa_g: 0.001, tempo_min: 1, conc_inicial_mgL: 1, temperatura_C: 0.5 };
+    const decimalsFor = { ph: 2, massa_g: 3, tempo_min: 0, conc_inicial_mgL: 1, temperatura_C: 1 };
+    const container = document.getElementById('sliderContainer');
+    container.innerHTML = '';
+    order.forEach(key => {
+      const r = ranges[key];
+      if (!r) return;
+      const field = document.createElement('div');
+      field.className = 'slider-field';
+      field.innerHTML = `
+        <div class="slider-label"><span>${r.label}</span><span class="val" id="val_${key}">${r.default.toFixed(decimalsFor[key])}</span></div>
+        <input type="range" id="slider_${key}" min="${r.min}" max="${r.max}" step="${stepFor[key]}" value="${r.default}">
+      `;
+      container.appendChild(field);
+      const input = field.querySelector('input');
+      const label = field.querySelector('.val');
+      input.addEventListener('input', () => {
+        label.textContent = parseFloat(input.value).toFixed(decimalsFor[key]);
+        clearTimeout(ML.predictTimeout);
+        ML.predictTimeout = setTimeout(runPrediction, 250);
+      });
+    });
+  }
+
+  async function runPrediction() {
+    const ranges = ML.data.feature_ranges;
+    if (!ranges) return;
+    const payload = {};
+    ['ph', 'massa_g', 'tempo_min', 'conc_inicial_mgL', 'temperatura_C'].forEach(key => {
+      const el = document.getElementById('slider_' + key);
+      payload[key] = parseFloat(el.value);
+    });
+    const statusEl = document.getElementById('predictStatus');
+    try {
+      const resp = await fetch('/api/predict', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      const out = await resp.json();
+      document.getElementById('predQe').textContent = fmt(out.qe_pred, 2) + ' mg/g';
+      document.getElementById('predRemocao').textContent = fmt(out.remocao_pred, 1) + ' %';
+      statusEl.textContent = 'atualizado ' + new Date().toLocaleTimeString('pt-BR');
+      statusEl.style.color = 'var(--text-secondary)';
+    } catch (e) {
+      statusEl.textContent = 'Simulador precisa do backend rodando (python ml/app.py) — funciona ao abrir o dashboard localmente, não na versão estática publicada.';
+      statusEl.style.color = alertColor;
+    }
+  }
+
+  document.getElementById('targetToggle').addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    document.querySelectorAll('#targetToggle button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderAll(btn.dataset.target);
+  });
+
+  (async function initML() {
+    await loadMLData();
+    renderAll('qe');
+    buildSliders();
+    runPrediction();
+  })();
+
+  // ---------------------------------------------------------------
+  // Comparação de Isotermas (Palma vs. Vagem) — banco relacional SQL
+  // ---------------------------------------------------------------
+  const ISO = { params: [], rawPoints: [], qmaxChart: null, curveChart: null };
+
+  const ISO_SERIES = [
+    { material: 'Vagem', treatment: 'Base', model: 'Langmuir (NLS)', label: 'Vagem · Base', color: tealDark, dash: [] },
+    { material: 'Vagem', treatment: 'Acido', model: 'Langmuir (NLS)', label: 'Vagem · Ácido', color: teal, dash: [] },
+    { material: 'Vagem', treatment: 'In natura', model: 'Langmuir (NLS)', label: 'Vagem · In natura', color: tealLight, dash: [] },
+    { material: 'Palma', treatment: 'Base', model: 'Langmuir', label: 'Palma · Base', color: blue, dash: [6, 3] },
+    { material: 'Palma', treatment: 'Acido', model: 'Langmuir', label: 'Palma · Ácido', color: '#1B4F72', dash: [6, 3] },
+    { material: 'Palma', treatment: 'In natura', model: 'Langmuir', label: 'Palma · In natura', color: '#7FB3D5', dash: [6, 3] },
+  ];
+  const ISO_MODEL_LIST = ['Langmuir', 'Freundlich', 'Temkin', 'DKR', 'Harkin-Jura', 'Halsey'];
+  const ISO_TEMPS = [15, 30, 45];
+
+  async function loadIsoData() {
+    // Arquivo estático pre-gerado a partir do banco (db/isotherms_static.json) --
+    // funciona tanto local (Flask) quanto na versão publicada no GitHub Pages
+    // (sem backend). Para atualizar depois de rodar o ETL de novo, regere esse
+    // arquivo a partir de db/biosorcao.db.
+    const resp = await fetch('db/isotherms_static.json');
+    const data = await resp.json();
+    ISO.params = data.params || [];
+    ISO.rawPoints = data.raw_points || [];
+  }
+
+  function isoFindParam(material, treatment, model, temp) {
+    return ISO.params.find(p => p.material === material && p.treatment === treatment &&
+      p.model === model && p.temperature_c === temp);
+  }
+
+  function renderIsoQmaxChart(metric) {
+    const datasets = ISO_SERIES.map(s => {
+      const data = ISO_TEMPS.map(t => {
+        const row = isoFindParam(s.material, s.treatment, s.model, t);
+        return (row && row[metric] != null) ? row[metric] : null;
+      });
+      return {
+        label: s.label, data, borderColor: s.color, backgroundColor: s.color,
+        borderDash: s.dash, spanGaps: true, tension: 0.25, pointRadius: 3,
+      };
+    });
+    if (ISO.qmaxChart) ISO.qmaxChart.destroy();
+    ISO.qmaxChart = new Chart(document.getElementById('isoQmaxChart'), {
+      type: 'line',
+      data: { labels: ISO_TEMPS.map(t => t + ' °C'), datasets },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10.5 } } } },
+        scales: {
+          x: { title: { display: true, text: 'Temperatura', font: { size: 11 } }, grid: { color: '#EEF1F4' } },
+          y: {
+            title: { display: true, text: metric === 'qmax' ? 'Qmax (mg/g)' : 'R²', font: { size: 11 } },
+            beginAtZero: metric === 'r2', grid: { color: '#EEF1F4' }
+          }
+        }
+      }
+    });
+  }
+
+  function langmuirCurvePoints(qmax, kl, ceMax) {
+    const pts = [];
+    const n = 40;
+    for (let i = 0; i <= n; i++) {
+      const ce = (ceMax * i) / n;
+      pts.push({ x: ce, y: (qmax * kl * ce) / (1 + kl * ce) });
+    }
+    return pts;
+  }
+
+  function renderIsoCurve() {
+    const material = document.getElementById('isoCurveMaterial').value;
+    const treatment = document.getElementById('isoCurveTreatment').value;
+    const temp = parseFloat(document.getElementById('isoCurveTemp').value);
+    const model = material === 'Vagem' ? 'Langmuir (NLS)' : 'Langmuir';
+
+    const paramRow = isoFindParam(material, treatment, model, temp);
+    const points = ISO.rawPoints
+      .filter(p => p.material === material && p.treatment === treatment && p.temperature_c === temp)
+      .map(p => ({ x: p.ce, y: p.qe }));
+
+    const infoEl = document.getElementById('isoCurveInfo');
+    const warnEl = document.getElementById('isoCurveWarning');
+    const datasets = [];
+
+    if (points.length) {
+      datasets.push({
+        label: 'Pontos experimentais', data: points, showLine: false,
+        backgroundColor: 'rgba(2,195,154,0.6)', borderColor: tealDark, pointRadius: 5,
+      });
+    }
+    if (paramRow && paramRow.qmax != null && paramRow.kl != null) {
+      const ceRange = (points.length ? Math.max(...points.map(p => p.x)) : 400) * 1.2;
+      const curve = langmuirCurvePoints(paramRow.qmax, paramRow.kl, ceRange);
+      datasets.push({
+        label: 'Ajuste Langmuir', type: 'line', data: curve,
+        borderColor: blue, borderWidth: 2, pointRadius: 0, fill: false,
+      });
+      infoEl.innerHTML =
+        `Q<sub>max</sub> <b>${paramRow.qmax.toFixed(2)}</b> mg/g &nbsp;·&nbsp; ` +
+        `K<sub>L</sub> <b>${paramRow.kl.toFixed(4)}</b> L/mg &nbsp;·&nbsp; ` +
+        `R² <b>${paramRow.r2 != null ? paramRow.r2.toFixed(3) : '—'}</b> &nbsp;·&nbsp; modelo <b>${model}</b>`;
+    } else {
+      infoEl.innerHTML = 'Sem parâmetros de ajuste disponíveis para esta combinação.';
+    }
+
+    if (paramRow && paramRow.notes) {
+      warnEl.hidden = false;
+      warnEl.textContent = '⚠ ' + paramRow.notes;
+    } else {
+      warnEl.hidden = true;
+    }
+
+    if (ISO.curveChart) ISO.curveChart.destroy();
+    ISO.curveChart = new Chart(document.getElementById('isoCurveChart'), {
+      type: 'scatter',
+      data: { datasets },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10.5 } } } },
+        scales: {
+          x: { title: { display: true, text: 'Ce (mg/L)', font: { size: 11 } }, grid: { color: '#EEF1F4' } },
+          y: { title: { display: true, text: 'Qe (mg/g)', font: { size: 11 } }, grid: { color: '#EEF1F4' } }
+        }
+      }
+    });
+  }
+
+  function renderIsoModelsTable() {
+    const treatment = document.getElementById('isoModelsTreatment').value;
+    const tbody = document.querySelector('#isoModelsTable tbody');
+    tbody.innerHTML = '';
+
+    const avgByModel = {};
+    ISO_MODEL_LIST.forEach(model => {
+      const r2s = ISO_TEMPS.map(t => {
+        const row = isoFindParam('Palma', treatment, model, t);
+        return row ? row.r2 : null;
+      }).filter(v => v != null);
+      avgByModel[model] = r2s.length ? r2s.reduce((a, b) => a + b, 0) / r2s.length : -Infinity;
+    });
+    const bestModel = Object.entries(avgByModel).sort((a, b) => b[1] - a[1])[0][0];
+
+    ISO_MODEL_LIST.forEach(model => {
+      const tr = document.createElement('tr');
+      let html = `<td>${model}</td>`;
+      ISO_TEMPS.forEach(t => {
+        const row = isoFindParam('Palma', treatment, model, t);
+        const val = (row && row.r2 != null) ? row.r2.toFixed(3) : '—';
+        const cls = (model === bestModel && row && row.r2 != null) ? 'best' : '';
+        html += `<td class="${cls}">${val}</td>`;
+      });
+      tr.innerHTML = html;
+      tbody.appendChild(tr);
+    });
+  }
+
+  document.getElementById('isoMetricToggle').addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    document.querySelectorAll('#isoMetricToggle button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderIsoQmaxChart(btn.dataset.metric);
+  });
+  ['isoCurveMaterial', 'isoCurveTreatment', 'isoCurveTemp'].forEach(id => {
+    document.getElementById(id).addEventListener('change', renderIsoCurve);
+  });
+  document.getElementById('isoModelsTreatment').addEventListener('change', renderIsoModelsTable);
+
+  (async function initIso() {
+    await loadIsoData();
+    renderIsoQmaxChart('qmax');
+    renderIsoCurve();
+    renderIsoModelsTable();
+  })();
+
+  // ---------------------------------------------------------------
+  // Otimização Multivariada — DoE & RSM
+  // ---------------------------------------------------------------
+  const RSM = { data: {}, target: 'qe_mgg', paretoChart: null };
+  const heatScale = [[0, '#2A6F97'], [0.5, '#F4D35E'], [1, '#E74C3C']];
+
+  Chart.register({
+    id: 'paretoCritLine',
+    afterDraw(chart) {
+      const cfg = chart.options.plugins && chart.options.plugins.paretoCritLine;
+      if (!cfg || cfg.value == null) return;
+      const { ctx, chartArea: { top, bottom }, scales: { x } } = chart;
+      const xPix = x.getPixelForValue(cfg.value);
+      ctx.save();
+      ctx.strokeStyle = alertColor;
+      ctx.setLineDash([5, 4]);
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(xPix, top);
+      ctx.lineTo(xPix, bottom);
+      ctx.stroke();
+      ctx.restore();
+    }
+  });
+
+  async function loadRsmData() {
+    const files = {
+      summary: 'rsm/artifacts/summary.json',
+      anova_qe_mgg: 'rsm/artifacts/anova_qe_mgg.json',
+      anova_remocao_pct: 'rsm/artifacts/anova_remocao_pct.json',
+      pareto_qe_mgg: 'rsm/artifacts/pareto_qe_mgg.json',
+      pareto_remocao_pct: 'rsm/artifacts/pareto_remocao_pct.json',
+      surface_qe: 'rsm/artifacts/surface_qe.json',
+      surface_remocao: 'rsm/artifacts/surface_remocao.json',
+      optimum: 'rsm/artifacts/optimum.json',
+    };
+    const entries = Object.entries(files);
+    const results = await Promise.all(entries.map(([, p]) => fetch(p).then(r => r.json())));
+    entries.forEach(([k], i) => { RSM.data[k] = results[i]; });
+  }
+
+  function rsmKpis(target) {
+    const a = RSM.data['anova_' + target];
+    document.getElementById('rsmR2').textContent = a.r2.toFixed(3);
+    document.getElementById('rsmR2Adj').textContent = 'Ajustado: ' + a.r2_adj.toFixed(3);
+    document.getElementById('rsmF').textContent = a.model_f.toFixed(2);
+    document.getElementById('rsmP').textContent = 'p ' + (a.model_p < 0.0001 ? '< 0,0001' : a.model_p.toExponential(2));
+    document.getElementById('rsmCond').textContent = a.condition_number.toFixed(1);
+    document.getElementById('rsmN').textContent = a.n_obs;
+    document.getElementById('rsmDf').textContent = a.n_params + ' termos · ' + a.df_resid + ' gl resíduo';
+
+    const pareto = RSM.data['pareto_' + target];
+    const top = pareto.points[0];
+    document.getElementById('rsmTopTerm').textContent = top.term;
+    document.getElementById('rsmTopTermP').textContent = '|t| = ' + top.abs_t.toFixed(2);
+  }
+
+  function rsmAnovaTable(target) {
+    const data = RSM.data['anova_' + target];
+    const tbody = document.querySelector('#rsmAnovaTable tbody');
+    tbody.innerHTML = '';
+    data.rows.forEach(r => {
+      const tr = document.createElement('tr');
+      if (r.raw_term === 'Residual') tr.className = 'residual';
+      else if (r.significant) tr.className = 'significant';
+      const sigCell = r.significant == null ? '<td>—</td>'
+        : (r.significant ? '<td class="sig-badge sig-yes">Sim</td>' : '<td class="sig-badge sig-no">Não</td>');
+      tr.innerHTML =
+        `<td>${r.term}</td>` +
+        `<td>${r.sum_sq.toFixed(2)}</td>` +
+        `<td>${r.df}</td>` +
+        `<td>${r.F != null ? r.F.toFixed(2) : '—'}</td>` +
+        `<td>${r.p != null ? (r.p < 0.0001 ? '< 0,0001' : r.p.toFixed(4)) : '—'}</td>` +
+        sigCell;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function rsmParetoChart(target) {
+    const pareto = RSM.data['pareto_' + target];
+    const labels = pareto.points.map(p => p.term);
+    const values = pareto.points.map(p => p.abs_t);
+    const colors = pareto.points.map(p => p.significant ? tealDark : '#B9C2CA');
+    if (RSM.paretoChart) RSM.paretoChart.destroy();
+    RSM.paretoChart = new Chart(document.getElementById('rsmParetoChart'), {
+      type: 'bar',
+      data: { labels, datasets: [{ data: values, backgroundColor: colors }] },
+      options: {
+        indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, paretoCritLine: { value: pareto.t_critical } },
+        scales: {
+          x: { title: { display: true, text: '|t| padronizado', font: { size: 11 } }, grid: { color: '#EEF1F4' } },
+          y: { ticks: { font: { size: 10.5 } }, grid: { display: false } }
+        }
+      }
+    });
+  }
+
+  function rsmSurface3D(target) {
+    const s = RSM.data[target === 'qe_mgg' ? 'surface_qe' : 'surface_remocao'];
+    Plotly.newPlot('rsmSurface3D', [{
+      type: 'surface', x: s.x, y: s.y, z: s.z, colorscale: heatScale,
+      colorbar: { thickness: 12, tickfont: { size: 9 } },
+    }], {
+      margin: { l: 0, r: 0, t: 10, b: 0 },
+      scene: {
+        xaxis: { title: s.x_label, titlefont: { size: 10 } },
+        yaxis: { title: s.y_label, titlefont: { size: 10 } },
+        zaxis: { title: target === 'qe_mgg' ? 'Qe (mg/g)' : '% Remoção', titlefont: { size: 10 } },
+      },
+      font: { family: 'Inter, sans-serif', size: 10 },
+    }, { displayModeBar: false, responsive: true });
+  }
+
+  function rsmContour2D(target) {
+    const s = RSM.data[target === 'qe_mgg' ? 'surface_qe' : 'surface_remocao'];
+    Plotly.newPlot('rsmContour2D', [{
+      type: 'contour', x: s.x, y: s.y, z: s.z, colorscale: heatScale,
+      contours: { showlabels: true, labelfont: { size: 9, color: '#2C3E50' } },
+      colorbar: { thickness: 12, tickfont: { size: 9 } },
+    }], {
+      margin: { l: 50, r: 10, t: 10, b: 40 },
+      xaxis: { title: s.x_label }, yaxis: { title: s.y_label },
+      font: { family: 'Inter, sans-serif', size: 10 },
+    }, { displayModeBar: false, responsive: true });
+  }
+
+  function rsmOptimum() {
+    const o = RSM.data.optimum;
+    const container = document.getElementById('rsmOptimumGrid');
+    const cells = [
+      { lbl: 'pH', val: o.settings.ph.toFixed(2) },
+      { lbl: 'Massa (g)', val: o.settings.massa_g.toFixed(3) },
+      { lbl: 'Tempo (min)', val: o.settings.tempo_min.toFixed(0) },
+      { lbl: 'Conc. inicial (mg/L)', val: o.settings.conc_inicial_mgL.toFixed(1) },
+      { lbl: 'Temperatura (°C)', val: o.settings.temperatura_C.toFixed(1) },
+    ];
+    container.innerHTML = cells.map(c =>
+      `<div class="optimum-cell"><div class="lbl">${c.lbl}</div><div class="val">${c.val}</div></div>`
+    ).join('') +
+      `<div class="optimum-cell" style="grid-column:1 / -1;">` +
+      `<div class="lbl">Q<sub>e</sub> Previsto no Ponto Ótimo · Desirability</div>` +
+      `<div class="val">${o.qe_pred.toFixed(2)} mg/g &nbsp;·&nbsp; D = ${o.desirability.toFixed(3)}</div></div>`;
+  }
+
+  function renderRsmAll(target) {
+    RSM.target = target;
+    rsmKpis(target);
+    rsmAnovaTable(target);
+    rsmParetoChart(target);
+    rsmSurface3D(target);
+    rsmContour2D(target);
+  }
+
+  document.getElementById('rsmTargetToggle').addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    document.querySelectorAll('#rsmTargetToggle button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderRsmAll(btn.dataset.target);
+  });
+
+  (async function initRsm() {
+    await loadRsmData();
+    document.getElementById('rsmFormulaText').innerHTML = '<b>' + RSM.data.summary.interactions_kept.join(', ') + '</b>';
+    renderRsmAll('qe_mgg');
+    rsmOptimum();
+  })();
+
+  // ---------------------------------------------------------------
+  // Ajuste Não-Linear — Isotermas & Cinética
+  // ---------------------------------------------------------------
+  const FIT = {
+    iso: null, kin: null,
+    isoActive: new Set(['Langmuir', 'Freundlich', 'Temkin', 'Redlich-Peterson']),
+    kinActive: new Set(['PFO', 'PSO', 'Elovich']),
+    isoChart: null, isoResidChart: null, kinChart: null, kinResidChart: null,
+  };
+  const ISO_MODEL_COLORS = { 'Langmuir': '#008080', 'Freundlich': '#2A6F97', 'Temkin': '#E67E22', 'Redlich-Peterson': '#8E44AD' };
+  const KIN_MODEL_COLORS = { 'PFO': '#008080', 'PSO': '#2A6F97', 'Elovich': '#E67E22' };
+  const KIN_MODEL_LABELS = { 'PFO': 'Pseudo-1ª ordem', 'PSO': 'Pseudo-2ª ordem', 'Elovich': 'Elovich' };
+
+  async function loadFitData() {
+    const [iso, kin] = await Promise.all([
+      fetch('fit/artifacts/isotherm_fits.json').then(r => r.json()),
+      fetch('fit/artifacts/kinetics_fits.json').then(r => r.json()),
+    ]);
+    FIT.iso = iso; FIT.kin = kin;
+  }
+
+  function fmtErr(v, d) { return (v == null) ? '—' : v.toFixed(d); }
+
+  function zeroLine(xMin, xMax) {
+    return { label: 'zero', type: 'line', data: [{ x: xMin, y: 0 }, { x: xMax, y: 0 }], borderColor: '#B9C2CA', borderDash: [4, 3], borderWidth: 1, pointRadius: 0, fill: false };
+  }
+
+  function renderIsoFit() {
+    const material = document.getElementById('fitIsoMaterial').value;
+    const treatment = document.getElementById('fitIsoTreatment').value;
+    const temp = parseFloat(document.getElementById('fitIsoTemp').value);
+    const g = FIT.iso.groups.find(x => x.material === material && x.treatment === treatment && x.temperature_c === temp);
+    const tbody = document.querySelector('#fitIsoErrorTable tbody');
+    tbody.innerHTML = '';
+    if (!g) { return; }
+
+    const datasets = [{
+      label: 'Experimental', data: g.data.ce.map((c, i) => ({ x: c, y: g.data.qe[i] })),
+      showLine: false, backgroundColor: '#2C3E50', pointRadius: 5, order: 0,
+    }];
+    const ceMax = Math.max(...g.data.ce) * 1.15;
+    const residDatasets = [zeroLine(0, ceMax)];
+
+    Object.entries(g.models).forEach(([name, m]) => {
+      const color = ISO_MODEL_COLORS[name];
+      const active = FIT.isoActive.has(name);
+      if (active && m.ok) {
+        datasets.push({ label: name, type: 'line', data: m.curve.ce.map((c, i) => ({ x: c, y: m.curve.qe[i] })),
+          borderColor: color, borderWidth: 2, pointRadius: 0, fill: false, order: 1 });
+        residDatasets.push({ label: name, data: m.residuals_x.map((x, i) => ({ x, y: m.residuals[i] })),
+          backgroundColor: color, showLine: false, pointRadius: 4 });
+      }
+      const tr = document.createElement('tr');
+      tr.style.opacity = active ? 1 : 0.4;
+      const e = m.ok ? m.errors : null;
+      tr.innerHTML = `<td style="color:${color};font-weight:600;">${name}</td>` +
+        `<td>${fmtErr(e && e.chi2, 3)}</td><td>${fmtErr(e && e.are, 2)}</td>` +
+        `<td>${fmtErr(e && e.hybrid, 2)}</td><td>${fmtErr(e && e.r2_nl, 3)}</td>`;
+      tbody.appendChild(tr);
+    });
+
+    if (FIT.isoChart) FIT.isoChart.destroy();
+    FIT.isoChart = new Chart(document.getElementById('fitIsoChart'), {
+      type: 'scatter', data: { datasets },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } },
+        scales: {
+          x: { title: { display: true, text: 'Ce (mg/L)', font: { size: 11 } }, grid: { color: '#EEF1F4' } },
+          y: { title: { display: true, text: 'Qe (mg/g)', font: { size: 11 } }, grid: { color: '#EEF1F4' } }
+        }
+      }
+    });
+    if (FIT.isoResidChart) FIT.isoResidChart.destroy();
+    FIT.isoResidChart = new Chart(document.getElementById('fitIsoResidChart'), {
+      type: 'scatter', data: { datasets: residDatasets },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { title: { display: true, text: 'Ce (mg/L)', font: { size: 10 } }, grid: { color: '#EEF1F4' } },
+          y: { grid: { color: '#EEF1F4' } }
+        }
+      }
+    });
+  }
+
+  function renderKinFit() {
+    const material = document.getElementById('fitKinMaterial').value;
+    const treatment = document.getElementById('fitKinTreatment').value;
+    const g = FIT.kin.groups.find(x => x.material === material && x.treatment === treatment);
+    const tbody = document.querySelector('#fitKinErrorTable tbody');
+    tbody.innerHTML = '';
+    if (!g) { return; }
+
+    const datasets = [
+      { label: 'Réplicas', data: g.data_raw.t.map((t, i) => ({ x: t, y: g.data_raw.qt[i] })),
+        showLine: false, backgroundColor: 'rgba(44,62,80,0.25)', pointRadius: 3, order: 0 },
+      { label: 'Média experimental', data: g.data.t.map((t, i) => ({ x: t, y: g.data.qt[i] })),
+        showLine: false, backgroundColor: '#2C3E50', pointRadius: 5, order: 0 },
+    ];
+    const tMax = Math.max(...g.data.t) * 1.05;
+    const residDatasets = [zeroLine(0, tMax)];
+
+    Object.entries(g.models).forEach(([name, m]) => {
+      const color = KIN_MODEL_COLORS[name];
+      const active = FIT.kinActive.has(name);
+      if (active && m.ok) {
+        datasets.push({ label: KIN_MODEL_LABELS[name], type: 'line', data: m.curve.t.map((t, i) => ({ x: t, y: m.curve.qt[i] })),
+          borderColor: color, borderWidth: 2, pointRadius: 0, fill: false, order: 1 });
+        residDatasets.push({ label: name, data: m.residuals_x.map((x, i) => ({ x, y: m.residuals[i] })),
+          backgroundColor: color, showLine: false, pointRadius: 4 });
+      }
+      const tr = document.createElement('tr');
+      tr.style.opacity = active ? 1 : 0.4;
+      const e = m.ok ? m.errors : null;
+      tr.innerHTML = `<td style="color:${color};font-weight:600;">${KIN_MODEL_LABELS[name]}</td>` +
+        `<td>${fmtErr(e && e.chi2, 3)}</td><td>${fmtErr(e && e.are, 2)}</td>` +
+        `<td>${fmtErr(e && e.hybrid, 2)}</td><td>${fmtErr(e && e.r2_nl, 3)}</td>`;
+      tbody.appendChild(tr);
+    });
+
+    if (FIT.kinChart) FIT.kinChart.destroy();
+    FIT.kinChart = new Chart(document.getElementById('fitKinChart'), {
+      type: 'scatter', data: { datasets },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } },
+        scales: {
+          x: { title: { display: true, text: 'Tempo (min)', font: { size: 11 } }, grid: { color: '#EEF1F4' } },
+          y: { title: { display: true, text: 'Qt (mg/g)', font: { size: 11 } }, grid: { color: '#EEF1F4' } }
+        }
+      }
+    });
+    if (FIT.kinResidChart) FIT.kinResidChart.destroy();
+    FIT.kinResidChart = new Chart(document.getElementById('fitKinResidChart'), {
+      type: 'scatter', data: { datasets: residDatasets },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { title: { display: true, text: 'Tempo (min)', font: { size: 10 } }, grid: { color: '#EEF1F4' } },
+          y: { grid: { color: '#EEF1F4' } }
+        }
+      }
+    });
+  }
+
+  function wireModelToggle(containerId, activeSet, rerender) {
+    document.getElementById(containerId).addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      const model = btn.dataset.model;
+      if (activeSet.has(model)) { activeSet.delete(model); btn.classList.remove('active'); }
+      else { activeSet.add(model); btn.classList.add('active'); }
+      rerender();
+    });
+  }
+  wireModelToggle('fitIsoModelToggle', FIT.isoActive, renderIsoFit);
+  wireModelToggle('fitKinModelToggle', FIT.kinActive, renderKinFit);
+  ['fitIsoMaterial', 'fitIsoTreatment', 'fitIsoTemp'].forEach(id =>
+    document.getElementById(id).addEventListener('change', renderIsoFit));
+  ['fitKinMaterial', 'fitKinTreatment'].forEach(id =>
+    document.getElementById(id).addEventListener('change', renderKinFit));
+
+  (async function initFit() {
+    await loadFitData();
+    renderIsoFit();
+    renderKinFit();
+  })();
+
+  // ---------------------------------------------------------------
+  // Modelagem Molecular — DFT (pyscf B3LYP/6-31G*)
+  // ---------------------------------------------------------------
+  const DFT = { summary: null, viewers: {}, isovals: null, energyChart: null };
+  const DFT_ORDER = ['methylene_blue', 'glucose', 'glucose_acido', 'glucose_base'];
+  const DFT_LABELS_SHORT = {
+    methylene_blue: 'Azul de Metileno', glucose: 'In Natura',
+    glucose_acido: 'Ácido (H₃PO₄)', glucose_base: 'Base (NaOH)',
+  };
+  const DFT_COLORS = {
+    methylene_blue: blue, glucose: tealDark, glucose_acido: '#E67E22', glucose_base: '#8E44AD',
+  };
+
+  async function loadDftData() {
+    DFT.summary = await fetch('dft/artifacts/dft_summary.json').then(r => r.json());
+    DFT.isovals = await fetch('dft/artifacts/cube_isovals.json').then(r => r.json());
+  }
+
+  function dftEnergyChart() {
+    const labels = DFT_ORDER.map(k => DFT_LABELS_SHORT[k]);
+    const homoLumo = DFT_ORDER.map(k => [DFT.summary[k].e_homo_ev, DFT.summary[k].e_lumo_ev]);
+    const colors = DFT_ORDER.map(k => DFT_COLORS[k]);
+    DFT.energyChart = new Chart(document.getElementById('dftEnergyChart'), {
+      type: 'bar',
+      data: { labels, datasets: [{ label: 'HOMO–LUMO (eV)', data: homoLumo, backgroundColor: colors, borderRadius: 4, barThickness: 60 }] },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => {
+                const k = DFT_ORDER[ctx.dataIndex];
+                const d = DFT.summary[k];
+                return [`HOMO: ${d.e_homo_ev.toFixed(3)} eV`, `LUMO: ${d.e_lumo_ev.toFixed(3)} eV`, `Gap: ${d.gap_ev.toFixed(3)} eV`];
+              }
+            }
+          },
+          paretoCritLine: { value: null },
+        },
+        scales: {
+          y: { title: { display: true, text: 'Energia (eV)', font: { size: 11 } }, grid: { color: '#EEF1F4' } },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+  }
+
+  function dftReactivityTable() {
+    const tbody = document.querySelector('#dftReactivityTable tbody');
+    tbody.innerHTML = '';
+    DFT_ORDER.forEach(k => {
+      const d = DFT.summary[k];
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td style="color:${DFT_COLORS[k]};font-weight:600;">${DFT_LABELS_SHORT[k]}</td>` +
+        `<td>${d.e_homo_ev.toFixed(3)}</td><td>${d.e_lumo_ev.toFixed(3)}</td><td>${d.gap_ev.toFixed(3)}</td>` +
+        `<td>${d.hardness_ev.toFixed(3)}</td><td>${d.softness_ev.toFixed(3)}</td><td>${d.electrophilicity_ev.toFixed(3)}</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function buildDftViewerGrid() {
+    const grid = document.getElementById('dftViewerGrid');
+    grid.innerHTML = DFT_ORDER.map(mol => `
+      <div class="dft-viewer-cell">
+        <div class="dvc-title">
+          <span style="color:${DFT_COLORS[mol]};">${DFT_LABELS_SHORT[mol]}</span>
+          <button class="export-btn" type="button" onclick="exportViewerPNG(() => DFT.viewers['${mol}'], 'dft_${mol}_' + document.getElementById('dftSurfaceSelect').value + '.png')">Exportar PNG</button>
+        </div>
+        <div class="dvc-canvas" id="dftViewer_${mol}"></div>
+        <div class="dft-legend" id="dftLegend_${mol}"></div>
+      </div>
+    `).join('');
+  }
+
+  async function loadOneDftViewer(mol) {
+    const surf = document.getElementById('dftSurfaceSelect').value;
+    const legend = document.getElementById(`dftLegend_${mol}`);
+
+    if (!DFT.viewers[mol]) {
+      DFT.viewers[mol] = $3Dmol.createViewer(document.getElementById(`dftViewer_${mol}`), { backgroundColor: 'white' });
+    }
+    const viewer = DFT.viewers[mol];
+    viewer.clear();
+
+    const xyzData = await fetch(`dft/artifacts/${mol}_optimized.xyz`).then(r => r.text());
+    viewer.addModel(xyzData, 'xyz');
+    viewer.setStyle({}, { stick: { radius: 0.12 }, sphere: { scale: 0.28 } });
+
+    legend.innerHTML = '';
+    if (surf !== 'none') {
+      const cubeData = await fetch(`dft/artifacts/${mol}_${surf}.cube`).then(r => r.text());
+      // Isovalores calculados por cubo (percentil 90 da magnitude, separado por sinal --
+      // ver dft/artifacts/cube_isovals.json) -- MEP e orbitais tem escalas bem diferentes,
+      // e MEP e assimetrica entre + e - (as vezes nem tem lado negativo, ex. cations).
+      const key = `${mol}_${surf}`;
+      const iv = (DFT.isovals && DFT.isovals[key]) || {};
+      const isoPos = iv.iso_pos != null ? iv.iso_pos : 0.02;
+      if (iv.iso_pos != null) {
+        viewer.addVolumetricData(cubeData, 'cube', { isoval: isoPos, color: 'blue', opacity: 0.7 });
+      }
+      if (iv.iso_neg != null) {
+        viewer.addVolumetricData(cubeData, 'cube', { isoval: iv.iso_neg, color: 'red', opacity: 0.7 });
+      }
+      const posLabel = surf === 'mep' ? 'Positivo (eletrofílico)' : 'Fase +';
+      const negLabel = surf === 'mep' ? 'Negativo (nucleofílico)' : 'Fase −';
+      legend.innerHTML =
+        `<span><span class="dot" style="background:#3050F8;"></span>${posLabel}</span>` +
+        `<span><span class="dot" style="background:#E03C3C;"></span>${negLabel}</span>`;
+    }
+
+    viewer.zoomTo();
+    viewer.render();
+  }
+
+  async function loadAllDftViewers() {
+    for (const mol of DFT_ORDER) {
+      await loadOneDftViewer(mol);
+    }
+  }
+
+  document.getElementById('dftSurfaceSelect').addEventListener('change', loadAllDftViewers);
+
+  (async function initDft() {
+    await loadDftData();
+    dftEnergyChart();
+    dftReactivityTable();
+    buildDftViewerGrid();
+    await loadAllDftViewers();
+  })();
+
+  // ---------------------------------------------------------------
+  // Relatório HTML para impressão / salvar como PDF
+  // ---------------------------------------------------------------
+  function reportInsightsBlock(title, textareaId) {
+    const ta = document.getElementById(textareaId);
+    const text = ta ? ta.value.trim() : '';
+    if (!text) return '';
+    return `<div class="r-insights"><b>${title}:</b><br>${text.replace(/</g, '&lt;').replace(/\n/g, '<br>')}</div>`;
+  }
+
+  function safeImg(dataUrl, caption) {
+    if (!dataUrl) return `<figure><div class="r-noimg">Gráfico não disponível (dados ainda carregando)</div><figcaption>${caption}</figcaption></figure>`;
+    return `<figure><img src="${dataUrl}"><figcaption>${caption}</figcaption></figure>`;
+  }
+
+  function safeTable(tableId) {
+    const el = document.getElementById(tableId);
+    return el ? el.outerHTML : '<p><i>Tabela não disponível.</i></p>';
+  }
+
+  async function generateReport() {
+    const btn = document.getElementById('reportBtn');
+    const original = btn.textContent;
+    btn.textContent = 'Gerando…';
+    btn.disabled = true;
+
+    try {
+      const mlMetrics = ML.data.metrics ? ML.data.metrics[ML.target] : null;
+      const mlBest = mlMetrics ? mlMetrics.best_model : null;
+      const mlTest = mlMetrics && mlBest ? mlMetrics.models[mlBest].test : null;
+      const mlTrain = mlMetrics && mlBest ? mlMetrics.models[mlBest].train : null;
+
+      const rsmA = RSM.data.summary ? RSM.data['anova_' + RSM.target] : null;
+      const rsmOpt = RSM.data.optimum;
+
+      let surface3dImg = '', contour2dImg = '';
+      try {
+        if (window.Plotly) {
+          surface3dImg = await Plotly.toImage(document.getElementById('rsmSurface3D'), { format: 'png', width: 1000, height: 700 });
+          contour2dImg = await Plotly.toImage(document.getElementById('rsmContour2D'), { format: 'png', width: 1000, height: 700 });
+        }
+      } catch (e) {}
+
+      const dftSurfLabel = document.getElementById('dftSurfaceSelect').selectedOptions[0].textContent;
+      const dftViewerFigs = DFT_ORDER.map(mol =>
+        safeImg(DFT.viewers[mol] ? DFT.viewers[mol].pngURI() : '', `${DFT_LABELS_SHORT[mol]} (${dftSurfLabel})`)
+      ).join('');
+
+      const notesGlobal = document.getElementById('notes').value.trim();
+
+      const html = `<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8">
+<title>Relatório — Bioadsorção da Vagem</title>
+<style>
+  @page { size: A4; margin: 16mm; }
+  *{box-sizing:border-box;}
+  body{font-family:'Inter','Segoe UI',Helvetica,Arial,sans-serif;color:#2C3E50;line-height:1.5;max-width:900px;margin:0 auto;padding:24px;}
+  h1{font-size:22px;margin-bottom:4px;}
+  h2{font-size:17px;margin-top:36px;border-bottom:2px solid #00A896;padding-bottom:6px;page-break-after:avoid;}
+  p{font-size:12.5px;}
+  .report-cover{text-align:center;padding:30px 0 20px;border-bottom:1px solid #E2E8F0;margin-bottom:10px;}
+  .report-sub{color:#7F8C8D;font-size:13px;}
+  .report-meta{color:#7F8C8D;font-size:11px;}
+  .report-toolbar{position:sticky;top:0;background:#fff;padding:10px 0;text-align:center;border-bottom:1px solid #E2E8F0;margin-bottom:10px;}
+  .report-toolbar button{font-family:inherit;font-size:13px;font-weight:600;color:#fff;background:#008080;border:none;border-radius:7px;padding:10px 20px;cursor:pointer;}
+  .report-figs{display:flex;flex-wrap:wrap;gap:16px;margin:14px 0;}
+  figure{margin:0;flex:1 1 380px;}
+  figure img{width:100%;border:1px solid #E2E8F0;border-radius:6px;}
+  figcaption{font-size:11px;color:#7F8C8D;text-align:center;margin-top:4px;}
+  .r-noimg{border:1.5px dashed #E2E8F0;border-radius:6px;padding:40px 10px;text-align:center;color:#A9B4BC;font-size:11px;}
+  table{width:100%;border-collapse:collapse;font-size:11px;margin:10px 0;}
+  th,td{border:1px solid #E2E8F0;padding:5px 7px;text-align:left;}
+  th{background:#F4F6F9;text-transform:uppercase;font-size:9.5px;color:#7F8C8D;}
+  table.report-kv td:nth-child(odd){color:#7F8C8D;font-weight:600;width:18%;}
+  table.report-kv td:nth-child(even){font-weight:700;width:32%;}
+  .r-insights{background:#FBFCFD;border:1px solid #E2E8F0;border-left:3px solid #2A6F97;border-radius:6px;padding:10px 12px;font-size:11.5px;margin-top:12px;}
+  footer{margin-top:40px;padding-top:14px;border-top:1px solid #E2E8F0;text-align:center;font-size:11px;color:#7F8C8D;}
+  footer a{color:#008080;font-weight:600;text-decoration:none;}
+  @media print{ .report-toolbar{display:none;} h2{page-break-before:auto;} section{page-break-inside:avoid;} }
+</style></head>
+<body>
+  <div class="report-toolbar"><button onclick="window.print()">🖨️ Imprimir / Salvar como PDF</button></div>
+
+  <section class="report-cover">
+    <h1>Relatório — Bioadsorção da Vagem</h1>
+    <p class="report-sub">Machine Learning &amp; XAI · DoE &amp; RSM · Isotermas &amp; Cinética · DFT</p>
+    <p class="report-meta">Gerado em ${new Date().toLocaleString('pt-BR')}</p>
+  </section>
+
+  <section>
+    <h2>1. Modelagem Preditiva — Machine Learning &amp; XAI</h2>
+    <p>Alvo exibido: <b>${ML.target === 'qe' ? 'Qₑ (mg/g)' : '% Remoção'}</b> &middot; melhor modelo: <b>${modelLabels[mlBest] || mlBest || '—'}</b></p>
+    <table class="report-kv">
+      <tr><td>R² Treino</td><td>${mlTrain ? mlTrain.r2.toFixed(3) : '—'}</td><td>R² Teste</td><td>${mlTest ? mlTest.r2.toFixed(3) : '—'}</td></tr>
+      <tr><td>RMSE Teste</td><td>${mlTest ? mlTest.rmse.toFixed(2) : '—'}</td><td>MAE Teste</td><td>${mlTest ? mlTest.mae.toFixed(2) : '—'}</td></tr>
+    </table>
+    <div class="report-figs">
+      ${safeImg(ML.parityChart ? ML.parityChart.toBase64Image('image/png', 1) : '', 'Paridade — Previsto vs. Observado')}
+      ${safeImg(ML.shapChart ? ML.shapChart.toBase64Image('image/png', 1) : '', 'SHAP Summary (Beeswarm)')}
+    </div>
+    ${reportInsightsBlock('Insights — ML & XAI', 'insightsMl')}
+  </section>
+
+  <section>
+    <h2>2. Comparação de Isotermas — Palma vs. Vagem</h2>
+    <div class="report-figs">
+      ${safeImg(ISO.qmaxChart ? ISO.qmaxChart.toBase64Image('image/png', 1) : '', 'Qmax / R² por Temperatura')}
+      ${safeImg(ISO.curveChart ? ISO.curveChart.toBase64Image('image/png', 1) : '', 'Curva da Isoterma (seleção atual)')}
+    </div>
+    <h3 style="font-size:13px;">Comparação de Modelos — Palma</h3>
+    ${safeTable('isoModelsTable')}
+    ${reportInsightsBlock('Insights — Isotermas', 'insightsIso')}
+  </section>
+
+  <section>
+    <h2>3. Otimização Multivariada — DoE &amp; RSM</h2>
+    <p>Alvo exibido: <b>${RSM.target === 'qe_mgg' ? 'Qₑ (mg/g)' : '% Remoção'}</b></p>
+    <table class="report-kv">
+      <tr><td>R²</td><td>${rsmA ? rsmA.r2.toFixed(3) : '—'}</td><td>R² Ajustado</td><td>${rsmA ? rsmA.r2_adj.toFixed(3) : '—'}</td></tr>
+      <tr><td>F do modelo</td><td>${rsmA ? rsmA.model_f.toFixed(2) : '—'}</td><td>Nº de Condição</td><td>${rsmA ? rsmA.condition_number.toFixed(1) : '—'}</td></tr>
+    </table>
+    <div class="report-figs">
+      ${safeImg(surface3dImg, 'Superfície de Resposta 3D (pH × Massa)')}
+      ${safeImg(contour2dImg, 'Mapa de Contorno 2D')}
+    </div>
+    <h3 style="font-size:13px;">Tabela ANOVA</h3>
+    ${safeTable('rsmAnovaTable')}
+    <div class="report-figs">
+      ${safeImg(RSM.paretoChart ? RSM.paretoChart.toBase64Image('image/png', 1) : '', 'Pareto dos Efeitos Padronizados')}
+    </div>
+    <p><b>Ponto ótimo (desirability):</b> pH=${rsmOpt ? rsmOpt.settings.ph.toFixed(2) : '—'}, Massa=${rsmOpt ? rsmOpt.settings.massa_g.toFixed(3) : '—'} g, Tempo=${rsmOpt ? rsmOpt.settings.tempo_min.toFixed(0) : '—'} min, Conc.=${rsmOpt ? rsmOpt.settings.conc_inicial_mgL.toFixed(1) : '—'} mg/L, Temp.=${rsmOpt ? rsmOpt.settings.temperatura_C.toFixed(1) : '—'} °C &rarr; Qₑ previsto = ${rsmOpt ? rsmOpt.qe_pred.toFixed(2) : '—'} mg/g (extrapola o espaço conjunto OFAT testado — validar experimentalmente).</p>
+    ${reportInsightsBlock('Insights — DoE & RSM', 'insightsRsm')}
+  </section>
+
+  <section>
+    <h2>4. Ajuste Não-Linear — Isotermas &amp; Cinética</h2>
+    <div class="report-figs">
+      ${safeImg(FIT.isoChart ? FIT.isoChart.toBase64Image('image/png', 1) : '', 'Ajustador de Isotermas de Equilíbrio')}
+    </div>
+    ${safeTable('fitIsoErrorTable')}
+    <div class="report-figs">
+      ${safeImg(FIT.kinChart ? FIT.kinChart.toBase64Image('image/png', 1) : '', 'Ajustador de Cinética')}
+    </div>
+    ${safeTable('fitKinErrorTable')}
+    ${reportInsightsBlock('Insights — Ajuste Não-Linear', 'insightsFit')}
+  </section>
+
+  <section>
+    <h2>5. Modelagem Molecular — DFT (B3LYP/6-31G*)</h2>
+    <div class="report-figs">
+      ${safeImg(DFT.energyChart ? DFT.energyChart.toBase64Image('image/png', 1) : '', 'Diagrama de Níveis de Energia (HOMO–LUMO)')}
+    </div>
+    <div class="report-figs">
+      ${dftViewerFigs}
+    </div>
+    <h3 style="font-size:13px;">Índices de Reatividade</h3>
+    ${safeTable('dftReactivityTable')}
+    ${reportInsightsBlock('Insights — DFT', 'insightsDft')}
+  </section>
+
+  ${notesGlobal ? `<section><h2>Notas &amp; Observações Gerais</h2><div class="r-insights">${notesGlobal.replace(/</g, '&lt;').replace(/\n/g, '<br>')}</div></section>` : ''}
+
+  <footer>
+    Powered by <b>William Pinheiro</b> &middot; <a href="http://lattes.cnpq.br/9111919283952655" target="_blank">Currículo Lattes</a>
+  </footer>
+</body></html>`;
+
+      const blob = new Blob([html], { type: 'text/html' });
+      const blobUrl = URL.createObjectURL(blob);
+      const w = window.open(blobUrl, '_blank');
+      if (!w) { alert('O navegador bloqueou a abertura da nova aba. Permita pop-ups para este site e tente de novo.'); return; }
+    } finally {
+      btn.textContent = original;
+      btn.disabled = false;
+    }
+  }
+
+  // ---------------------------------------------------------------
+  // Insights por seção (persistidos localmente por seção)
+  // ---------------------------------------------------------------
+  setupInsightsBox('dashboard-vagem-insights-ml', 'insightsMl', 'insightsMlIndicator');
+  setupInsightsBox('dashboard-vagem-insights-iso', 'insightsIso', 'insightsIsoIndicator');
+  setupInsightsBox('dashboard-vagem-insights-rsm', 'insightsRsm', 'insightsRsmIndicator');
+  setupInsightsBox('dashboard-vagem-insights-fit', 'insightsFit', 'insightsFitIndicator');
+  setupInsightsBox('dashboard-vagem-insights-dft', 'insightsDft', 'insightsDftIndicator');
+</script>
+</body>
+</html>

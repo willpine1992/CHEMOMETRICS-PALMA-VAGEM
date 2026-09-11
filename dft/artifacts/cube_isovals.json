@@ -1,0 +1,74 @@
+{
+  "glucose_acido_homo": {
+    "iso_pos": 0.012234230000000002,
+    "iso_neg": -0.007241694999999999,
+    "n_pos": 29574,
+    "n_neg": 34426
+  },
+  "glucose_acido_lumo": {
+    "iso_pos": 0.020964599999999996,
+    "iso_neg": -0.0036151840000000057,
+    "n_pos": 44625,
+    "n_neg": 19375
+  },
+  "glucose_acido_mep": {
+    "iso_pos": 0.28142839999999986,
+    "iso_neg": -0.03821199,
+    "n_pos": 35598,
+    "n_neg": 28402
+  },
+  "glucose_base_homo": {
+    "iso_pos": 0.01199852,
+    "iso_neg": -0.00741902,
+    "n_pos": 29219,
+    "n_neg": 34781
+  },
+  "glucose_base_lumo": {
+    "iso_pos": 0.024841,
+    "iso_neg": -0.008193734000000003,
+    "n_pos": 40511,
+    "n_neg": 23489
+  },
+  "glucose_base_mep": {
+    "iso_pos": 1.6265440000000024,
+    "iso_neg": -0.17197150000000003,
+    "n_pos": 5462,
+    "n_neg": 58538
+  },
+  "glucose_homo": {
+    "iso_pos": 0.01671456,
+    "iso_neg": -0.01175025,
+    "n_pos": 30024,
+    "n_neg": 33976
+  },
+  "glucose_lumo": {
+    "iso_pos": 0.02713942000000002,
+    "iso_neg": -0.0141685,
+    "n_pos": 36929,
+    "n_neg": 27071
+  },
+  "glucose_mep": {
+    "iso_pos": 0.2632744000000003,
+    "iso_neg": -0.034771,
+    "n_pos": 38559,
+    "n_neg": 25441
+  },
+  "methylene_blue_homo": {
+    "iso_pos": 0.013435259999999996,
+    "iso_neg": -0.012683000000000002,
+    "n_pos": 31063,
+    "n_neg": 32937
+  },
+  "methylene_blue_lumo": {
+    "iso_pos": 0.01284882,
+    "iso_neg": -0.01230815,
+    "n_pos": 31374,
+    "n_neg": 32626
+  },
+  "methylene_blue_mep": {
+    "iso_pos": 0.25366389999999994,
+    "iso_neg": null,
+    "n_pos": 64000,
+    "n_neg": 0
+  }
+}
