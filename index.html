@@ -681,6 +681,96 @@
     box-shadow:var(--shadow);
   }
   .report-btn:hover{background:#00695c;}
+  .report-btn.secondary{
+    background:#fff;
+    color:var(--teal-dark);
+    border:1px solid var(--teal-dark);
+    box-shadow:none;
+  }
+  .report-btn.secondary:hover{background:rgba(0,168,150,0.08);}
+  .header-actions{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+
+  .modal-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(44,62,80,0.55);
+    z-index:100;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  }
+  .modal-overlay[hidden]{display:none;}
+  .modal-box{
+    background:#fff;
+    border-radius:10px;
+    max-width:840px;
+    width:100%;
+    max-height:85vh;
+    overflow-y:auto;
+    box-shadow:0 20px 60px rgba(0,0,0,0.3);
+  }
+  .modal-header{
+    position:sticky;
+    top:0;
+    background:#fff;
+    padding:16px 22px;
+    border-bottom:1px solid var(--border);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    z-index:2;
+    border-radius:10px 10px 0 0;
+  }
+  .modal-header h2{font-size:16px;margin:0;}
+  .modal-close{
+    width:28px;height:28px;
+    border-radius:50%;
+    border:1px solid var(--border);
+    background:#FBFCFD;
+    color:var(--text-secondary);
+    font-size:13px;
+    cursor:pointer;
+    flex-shrink:0;
+  }
+  .modal-close:hover{border-color:var(--alert);color:var(--alert);}
+  .modal-body{padding:20px 24px 28px;}
+  .modal-body h3{
+    font-size:13.5px;
+    font-weight:700;
+    color:var(--teal-dark);
+    margin:24px 0 8px;
+    padding-bottom:6px;
+    border-bottom:1px solid var(--border);
+  }
+  .modal-body h3:first-child{margin-top:0;}
+  .modal-body p{font-size:12.5px;line-height:1.65;color:var(--text);margin:6px 0;}
+  .modal-body ul{margin:6px 0 12px;padding-left:20px;}
+  .modal-body li{font-size:12.5px;line-height:1.65;color:var(--text);margin-bottom:4px;}
+  .modal-body code{
+    background:#F4F6F9;
+    border-radius:3px;
+    padding:1px 5px;
+    font-size:11.5px;
+    font-family:'SF Mono',Consolas,monospace;
+  }
+  .modal-body a{color:var(--blue);}
+  .lib-tag{
+    display:inline-block;
+    background:#F4F6F9;
+    border:1px solid var(--border);
+    border-radius:5px;
+    padding:2px 8px;
+    font-size:11px;
+    font-family:'SF Mono',Consolas,monospace;
+    color:var(--text);
+    margin:2px 4px 2px 0;
+  }
 
   footer.app-footer{
     margin-top:28px;
@@ -744,8 +834,99 @@
       <h1>Dashboard Vagem</h1>
       <div class="subtitle">Bioadsorção da Vagem — ML/XAI, DoE &amp; RSM, Isotermas/Cinética e DFT</div>
     </div>
-    <button class="report-btn" type="button" id="reportBtn" onclick="generateReport()">📄 Gerar Relatório (PDF)</button>
+    <div class="header-actions">
+      <button class="report-btn secondary" type="button" id="methodologyBtn" onclick="openMethodologyModal()">📖 Metodologia</button>
+      <button class="report-btn" type="button" id="reportBtn" onclick="generateReport()">📄 Gerar Relatório (PDF)</button>
+    </div>
   </header>
+
+  <div class="modal-overlay" id="methodologyModal" hidden onclick="if(event.target===this) closeMethodologyModal()">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2>📖 Metodologia — Bibliotecas e Métodos por Análise</h2>
+        <button class="modal-close" type="button" onclick="closeMethodologyModal()">✕</button>
+      </div>
+      <div class="modal-body">
+
+        <h3>Dados &amp; ETL</h3>
+        <p>Planilha do Google Sheets sincronizada ao vivo do Google Drive a cada execução (não é cópia estática). O ETL faz o parsing linha a linha de cada aba (pH, Massa, Tempo, Concentração+Temperatura, Isotermas, Parâmetros) para os 2 materiais × 3 tratamentos, recalcula Qₑ e %Remoção pela fórmula padrão (as colunas de Qe da planilha original tinham erro de fórmula em algumas abas), e valida a estrutura da planilha (nomes de aba, células-âncora, contagens de linha, faixas plausíveis) antes de substituir o banco de produção — se o layout mudar no Drive, o ETL falha alto em vez de gravar dados errados silenciosamente.</p>
+        <p><b>Bibliotecas:</b>
+          <span class="lib-tag">pandas</span><span class="lib-tag">numpy</span><span class="lib-tag">sqlite3</span>
+          <span class="lib-tag">google-api-python-client</span><span class="lib-tag">google-auth</span>
+          <span class="lib-tag">openpyxl</span><span class="lib-tag">scipy.optimize</span>
+        </p>
+
+        <h3>1. Modelagem Preditiva — Machine Learning &amp; XAI</h3>
+        <ul>
+          <li>Dataset: 49 corridas reais (Vagem, tratamento Ácido) — recorte de referência usado também no RSM.</li>
+          <li>Pré-processamento: padronização (<code>StandardScaler</code>) das 5 variáveis de entrada.</li>
+          <li>Divisão treino/teste 75/25, com <code>k-fold</code> (k=5) dentro do <code>GridSearchCV</code> para tuning de hiperparâmetros.</li>
+          <li>Modelos treinados e comparados: <code>RandomForestRegressor</code>, <code>XGBRegressor</code>, <code>SVR</code> — separadamente para Qₑ e %Remoção.</li>
+          <li>Seleção do melhor modelo por R² de teste (desempate por menor RMSE).</li>
+          <li>Explicabilidade: valores SHAP (<code>TreeExplainer</code> para RF/XGBoost, <code>KernelExplainer</code> para SVR) — gráfico beeswarm de importância de variáveis.</li>
+          <li>Métricas reportadas separadamente para treino e teste: R², RMSE, MAE.</li>
+        </ul>
+        <p><b>Bibliotecas:</b>
+          <span class="lib-tag">scikit-learn</span><span class="lib-tag">xgboost</span><span class="lib-tag">shap</span>
+          <span class="lib-tag">pandas</span><span class="lib-tag">numpy</span><span class="lib-tag">joblib</span><span class="lib-tag">flask</span>
+        </p>
+
+        <h3>2. Otimização Multivariada — DoE &amp; RSM</h3>
+        <ul>
+          <li>Dados OFAT (não um CCD/BBD desenhado a priori) — RSM aplicado retrospectivamente, com menos poder estatístico que um design apropriado.</li>
+          <li>O modelo quadrático completo (21 termos) é matematicamente singular nesse dataset (colinearidade estrutural do OFAT, ex. massa×tempo r=−0,89).</li>
+          <li>Seleção de termos por <b>VIF</b> (Variance Inflation Factor): mantidos só os termos com VIF&lt;12 — 5 lineares + 5 quadráticos + 3 interações (pH×Massa, pH×Tempo, Concentração×Temperatura).</li>
+          <li>Regressão OLS quadrática + <b>ANOVA Tipo II</b> (soma dos quadrados, F, valor-p por termo).</li>
+          <li>Gráfico de <b>Pareto dos efeitos padronizados</b> (|t| vs. limiar crítico α=0,05).</li>
+          <li>Superfície de resposta 3D + mapa de contorno (Plotly) para a interação significativa pH×Massa.</li>
+          <li>Otimização por <b>desirability</b> via busca global (<code>differential_evolution</code>): maximiza Qₑ previsto minimizando massa, dentro da faixa observada.</li>
+        </ul>
+        <p><b>Bibliotecas:</b>
+          <span class="lib-tag">statsmodels</span><span class="lib-tag">scipy.optimize</span><span class="lib-tag">scipy.stats</span>
+          <span class="lib-tag">pandas</span><span class="lib-tag">numpy</span>
+        </p>
+
+        <h3>3. Ajuste Não-Linear — Isotermas &amp; Cinética</h3>
+        <ul>
+          <li>Ajuste direto (não-linearizado) via <code>scipy.optimize.curve_fit</code> (Levenberg-Marquardt / Trust Region Reflective conforme os limites).</li>
+          <li>Isotermas de equilíbrio: <b>Langmuir</b>, <b>Freundlich</b>, <b>Temkin</b>, <b>Redlich-Peterson</b> — sobre 36 pontos brutos Ce×Qe (só Vagem).</li>
+          <li>Cinética de adsorção: <b>Pseudo-1ª ordem</b>, <b>Pseudo-2ª ordem</b>, <b>Elovich</b> — sobre Qₜ×tempo (14 pontos/grupo, Palma e Vagem).</li>
+          <li>Funções de erro estatístico por modelo: <b>χ²</b> (Chi-quadrado), <b>ARE</b> (Erro Relativo Médio), <b>HYBRID</b> (Função de Erro Híbrida), <b>R²ₙₗ</b> (R² não-linear, calculado direto sobre os resíduos, sem distorção de linearização).</li>
+          <li>Achado documentado: a linearização clássica de Langmuir pode dar R² artificialmente baixo (ex. 0,03) em blocos com poucos pontos, enquanto o ajuste direto nos mesmos dados dá R²=0,87 — a linearização distorce a estrutura do erro, não o dado.</li>
+        </ul>
+        <p><b>Bibliotecas:</b>
+          <span class="lib-tag">scipy.optimize</span><span class="lib-tag">pandas</span><span class="lib-tag">numpy</span>
+        </p>
+
+        <h3>4. Modelagem Molecular — DFT</h3>
+        <ul>
+          <li>Nível de teoria: <b>B3LYP/6-31G(d)</b>, cálculo real de química quântica (não simulado).</li>
+          <li>Geometria 3D inicial: <code>RDKit</code> (embed <code>ETKDGv3</code> + pré-otimização MMFF94) a partir de SMILES oficiais do PubChem.</li>
+          <li>Otimização de geometria final: <code>pyscf.geomopt</code> com backend <code>pyberny</code> (gradiente analítico DFT).</li>
+          <li>Sistemas: azul de metileno (cátion, adsorbato) + β-D-glicopiranose (proxy da celulose) nos 3 tratamentos — In natura (neutra), Ácido (glicose-6-fosfato), Base (alcóxido C6, carga −1).</li>
+          <li>Propriedades: energias de HOMO/LUMO, gap de energia, e índices de reatividade da DFT conceitual (dureza η, maciez S, eletrofilia ω — aproximação de Koopmans).</li>
+          <li>Cubos volumétricos (<code>pyscf.tools.cubegen</code>): potencial eletrostático molecular (MEP) e isosuperfícies HOMO/LUMO, com isovalores calculados por percentil 90 da magnitude de cada cubo (não fixos).</li>
+          <li>Visualização 3D interativa no navegador: <code>3Dmol.js</code> (WebGL), lendo os arquivos .xyz e .cube diretamente.</li>
+          <li>Escopo: apenas DFT estático — <b>sem Dinâmica Molecular</b> (custo computacional incompatível com hardware local).</li>
+        </ul>
+        <p><b>Bibliotecas:</b>
+          <span class="lib-tag">pyscf</span><span class="lib-tag">pyberny</span><span class="lib-tag">rdkit</span><span class="lib-tag">numpy</span>
+        </p>
+
+        <h3>Frontend do dashboard</h3>
+        <p>Painel estático (HTML/CSS/JS puro), sem framework — visualizações via <code>Chart.js</code> (gráficos 2D), <code>Plotly.js</code> (superfície 3D e contorno) e <code>3Dmol.js</code> (visualizador molecular WebGL). Dados servidos como arquivos JSON/cube pré-gerados por cada pipeline Python, consumidos via <code>fetch()</code> — funciona tanto localmente (Flask) quanto publicado como site estático (GitHub Pages).</p>
+
+        <h3>Referências das estruturas moleculares (DFT)</h3>
+        <p>SMILES obtidas via API pública do PubChem (PUG REST), não desenhadas manualmente:</p>
+        <ul>
+          <li>Azul de Metileno (cátion) — <a href="https://pubchem.ncbi.nlm.nih.gov/compound/6099" target="_blank" rel="noopener noreferrer">PubChem CID 6099</a></li>
+          <li>β-D-Glicopiranose (proxy celulose) — <a href="https://pubchem.ncbi.nlm.nih.gov/compound/64689" target="_blank" rel="noopener noreferrer">PubChem CID 64689</a></li>
+          <li>β-D-Glicose 6-fosfato (proxy tratamento Ácido) — <a href="https://pubchem.ncbi.nlm.nih.gov/compound/439427" target="_blank" rel="noopener noreferrer">PubChem CID 439427</a></li>
+        </ul>
+
+      </div>
+    </div>
+  </div>
 
   <div class="ml-section">
     <div class="section-heading">
@@ -2333,6 +2514,21 @@
     buildDftViewerGrid();
     await loadAllDftViewers();
   })();
+
+  // ---------------------------------------------------------------
+  // Modal de Metodologia
+  // ---------------------------------------------------------------
+  function openMethodologyModal() {
+    document.getElementById('methodologyModal').hidden = false;
+    document.body.style.overflow = 'hidden';
+  }
+  function closeMethodologyModal() {
+    document.getElementById('methodologyModal').hidden = true;
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeMethodologyModal();
+  });
 
   // ---------------------------------------------------------------
   // Relatório HTML para impressão / salvar como PDF

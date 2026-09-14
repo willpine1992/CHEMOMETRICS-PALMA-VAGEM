@@ -58,7 +58,7 @@ Esse banco alimenta os quatro módulos de análise descritos abaixo, cada um com
 
 ### 2.4 — Modelagem Molecular: DFT (`dft/`)
 
-- **Nível de teoria**: B3LYP/6-31G(d), via **pyscf** (motor de química quântica nativo em Python) + **ASE**/**RDKit** para construção de geometria — cálculo real, não simulado.
+- **Nível de teoria**: B3LYP/6-31G(d), via **pyscf** (motor de química quântica nativo em Python; otimização de geometria com o backend **pyberny**) + **RDKit** para construção da geometria 3D inicial — cálculo real, não simulado.
 - **Sistemas modelados**: o adsorbato (azul de metileno, cátion) e um monômero representativo da celulose (β-D-glicopiranose) nos três estados de tratamento da biomassa:
   - **In natura**: glicose neutra.
   - **Ácido**: glicose-6-fosfato (éster fosfato formado por H₃PO₄ na hidroxila C6).
@@ -106,7 +106,7 @@ DASHBOARD-VAGEM/
 
 ```bash
 python3 -m venv .venv && source .venv/bin/activate
-pip install flask pandas numpy scikit-learn xgboost shap scipy statsmodels pyscf ase rdkit pyberny google-api-python-client google-auth
+pip install flask pandas numpy scikit-learn xgboost shap scipy statsmodels pyscf pyberny rdkit google-api-python-client google-auth
 
 # (Re)popular o banco a partir do Google Drive (requer credenciais de service account)
 python3 etl/build_database.py
